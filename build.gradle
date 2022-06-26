@@ -17,7 +17,7 @@ allprojects {
 
     version = '1.0'
     ext {
-        appName = "Onessium"
+        appName = "Onnessium"
         gdxVersion = '1.11.0'
         roboVMVersion = '2.3.16'
         box2DLightsVersion = '1.5'
@@ -44,7 +44,6 @@ project(":desktop") {
         implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        
     }
 }
 
@@ -59,5 +58,7 @@ project(":core") {
         api "org.apache.logging.log4j:log4j-api:2.17.1"
         api "org.apache.logging.log4j:log4j-core:2.17.1"
         api "org.apache.logging.log4j:log4j-slf4j-impl:2.17.1"
+        
+        implementation 'com.github.tfassbender:JfgCdi:master-SNAPSHOT'
     }
 }

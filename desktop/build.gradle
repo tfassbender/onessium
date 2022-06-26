@@ -2,8 +2,8 @@ sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs = ["../core/assets"]
 
-project.ext.mainClassName = "net.jfabricationgames.onessium.client.DesktopLauncher"
-project.ext.mainClassServerName = "net.jfabricationgames.onessium.server.ServerMain"
+project.ext.mainClassName = "net.jfabricationgames.onessium.desktop.client.DesktopLauncher"
+project.ext.mainClassServerName = "net.jfabricationgames.onessium.desktop.server.ServerMain"
 project.ext.assetsDir = new File("../core/assets")
 
 import org.gradle.internal.os.OperatingSystem

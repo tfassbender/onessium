@@ -1,1 +1,7 @@
 include 'desktop', 'core'
+
+sourceControl {
+    gitRepository("https://github.com/tfassbender/JfgCdi.git") {
+        producesModule("net.jfabricationgames.cdi:cdi")
+    }
+}

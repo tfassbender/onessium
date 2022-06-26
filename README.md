@@ -1,4 +1,4 @@
-# onessium
+# onnessium
 A turn-based strategy game, created with libGdx
 
 ## Development
