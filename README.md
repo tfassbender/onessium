@@ -5,6 +5,16 @@ A turn-based strategy game, created with libGdx
 Onessium is planed to be a strategy game that is turn based to focus on the strategy instead of which player can create his build-chains faster.  
 Because of the lack of textures, the game will only be playable in a tactical overview (only symbols for units, but no textures).
 
+## Build Notes
+
+To build the client and server use the following gradle commands in the top level project:
+```
+gradle clean dist distServer --refresh-dependencies
+```
+The `--refresh-dependencies` option is needed because the project depends on a github project that is referenced using jitpack.io. Therefore the dependencies must be manually refreshed sometimes, because there is no release, but the target is the master branch.
+
+The compiled sources are to be found in `desktop/build/libs`.
+
 ### Milestones
 
 #### Chat Server :heavy_check_mark:
