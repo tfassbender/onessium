@@ -47,4 +47,4 @@ Add diplomacy options, so the players can alliances.
 ## Story (WIP)
 The year is 2242. Players fight for the dominance on a distant planet.  
 On this planet, a mineral can be found that is superconductive at a temperature of 293K (20°C). This mineral is an important part of most modern robot- and weapon-systems.  
-This mineral is called **Onessium** (after Heike Kamerlingh Onnes - a Dutch physicist who discovered the phenomenon of supraconductivity in 1911).
+This mineral is called **Onnessium** (after Heike Kamerlingh Onnes - a Dutch physicist who discovered the phenomenon of supraconductivity in 1911).
