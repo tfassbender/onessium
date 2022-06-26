@@ -1,4 +1,4 @@
-package net.jfabricationgames.onessium.desktop.log;
+package net.jfabricationgames.onnessium.desktop.log;
 
 import com.badlogic.gdx.Gdx;
 

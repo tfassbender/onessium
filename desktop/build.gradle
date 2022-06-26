@@ -2,8 +2,8 @@ sourceCompatibility = 1.8
 sourceSets.main.java.srcDirs = [ "src/" ]
 sourceSets.main.resources.srcDirs = ["../core/assets"]
 
-project.ext.mainClassName = "net.jfabricationgames.onessium.desktop.client.DesktopLauncher"
-project.ext.mainClassServerName = "net.jfabricationgames.onessium.desktop.server.ServerMain"
+project.ext.mainClassName = "net.jfabricationgames.onnessium.desktop.client.DesktopLauncher"
+project.ext.mainClassServerName = "net.jfabricationgames.onnessium.desktop.server.ServerMain"
 project.ext.assetsDir = new File("../core/assets")
 
 import org.gradle.internal.os.OperatingSystem
@@ -31,7 +31,7 @@ task debug(dependsOn: classes, type: JavaExec) {
 }
 
 task dist(type: Jar) {
-    archiveBaseName = 'onessium-client'
+    archiveBaseName = 'onnessium-client'
 
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     manifest {
@@ -45,7 +45,7 @@ task dist(type: Jar) {
 }
 
 task distServer(type: Jar) {
-    archiveBaseName = 'onessium-server'
+    archiveBaseName = 'onnessium-server'
     
     duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
     manifest {

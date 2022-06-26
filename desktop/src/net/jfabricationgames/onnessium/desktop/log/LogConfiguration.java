@@ -1,4 +1,4 @@
-package net.jfabricationgames.onessium.desktop.log;
+package net.jfabricationgames.onnessium.desktop.log;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
@@ -15,7 +15,7 @@ public class LogConfiguration {
 		LogAdapter logAdapter = new LogAdapter();
 		logAdapter.log("APPLICATION_START", "################################################################################");
 		logAdapter.log("APPLICATION_START", "#                                                                              #");
-		logAdapter.log("APPLICATION_START", "#                        Starting - libgdx Chat                                #");
+		logAdapter.log("APPLICATION_START", "#                         Starting - Onnessium                                 #");
 		logAdapter.log("APPLICATION_START", "#                                                                              #");
 		logAdapter.log("APPLICATION_START", "################################################################################");
 		

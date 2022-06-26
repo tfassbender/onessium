@@ -1,4 +1,4 @@
-package net.jfabricationgames.onessium.desktop.log;
+package net.jfabricationgames.onnessium.desktop.log;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

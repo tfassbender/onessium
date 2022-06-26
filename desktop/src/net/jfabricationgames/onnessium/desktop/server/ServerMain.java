@@ -1,4 +1,4 @@
-package net.jfabricationgames.onessium.desktop.server;
+package net.jfabricationgames.onnessium.desktop.server;
 
 import java.io.IOException;
 
