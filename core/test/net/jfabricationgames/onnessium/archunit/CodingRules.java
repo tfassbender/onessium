@@ -7,9 +7,9 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
-import net.jfabricationgames.onnessium.archunit.util.ArchUnitUtils;
+import net.jfabricationgames.onnessium.archunit.util.PackageConstants;
 
-@AnalyzeClasses(packages = ArchUnitUtils.TOP_LEVEL_PACKAGE)
+@AnalyzeClasses(packages = PackageConstants.TOP_LEVEL_PACKAGE)
 public class CodingRules {
 	
 	@ArchTest
