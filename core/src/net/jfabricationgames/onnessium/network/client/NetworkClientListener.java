@@ -4,12 +4,17 @@ import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
+import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 
 public class NetworkClientListener extends Listener {
 	
 	@Inject
 	private ClientMessageHandlerRegistry clientMessageHandlerRegistry;
+	
+	public NetworkClientListener() {
+		CdiContainer.injectTo(this);
+	}
 	
 	@Override
 	public void connected(Connection connection) {

@@ -9,6 +9,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
+import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.network.Network;
 
@@ -23,6 +24,8 @@ public class NetworkServer {
 	private Server server;
 	
 	public NetworkServer() {
+		CdiContainer.injectTo(this);
+		
 		server = new Server() {
 			@Override
 			protected Connection newConnection() {

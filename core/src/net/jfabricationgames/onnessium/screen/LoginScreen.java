@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.input.InputManager;
+import net.jfabricationgames.onnessium.network.client.NetworkClient;
 
 public class LoginScreen extends ScreenAdapter {
 	
@@ -25,6 +26,8 @@ public class LoginScreen extends ScreenAdapter {
 	private InputManager inputManager;
 	@Inject
 	private SkinManager skinManager;
+	@Inject
+	private NetworkClient networkClient;
 	
 	private Stage stage;
 	
@@ -77,7 +80,7 @@ public class LoginScreen extends ScreenAdapter {
 		}
 		else {
 			labelError.setText("");
-			// TODO change to main menu screen
+			networkClient.connect(username, "password_1", "localhost", 4711); //TODO remove after tests
 			dispose();
 		}
 	}

@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.onnessium.network.network.Network;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 
@@ -22,8 +23,18 @@ public class ServerMain {
 	public static final String SERVER_PROPERTY_PORT = "port";
 	
 	public static void main(String[] args) throws IOException {
+		CdiContainer.create("net.jfabricationgames.onnessium");
+		
 		Properties config = loadOrCreateServerConfig();
-		int port = Integer.parseInt(config.getProperty(SERVER_PROPERTY_PORT, Integer.toString(Network.DEFAULT_PORT)));
+		
+		int port = Network.DEFAULT_PORT;
+		String portProperty = config.getProperty(SERVER_PROPERTY_PORT, Integer.toString(Network.DEFAULT_PORT));
+		try {
+			port = Integer.parseInt(portProperty);
+		}
+		catch (NumberFormatException e) {
+			log.debug("The port configuration '" + portProperty + "' could not be interpreted as a number. Using default port " + Network.DEFAULT_PORT);
+		}
 		
 		NetworkServer server = new NetworkServer();
 		server.start(port);
@@ -35,8 +46,10 @@ public class ServerMain {
 		Properties config = new Properties();
 		try {
 			config.load(new FileInputStream(SERVER_PROPERTIES_PATH));
-			log.info("server properties loaded successfully:");
-			log.info(SERVER_PROPERTY_PORT + ": " + config.getProperty(SERVER_PROPERTY_PORT));
+			log.info(" ************************************************");
+			log.info(" *** server properties loaded successfully:");
+			config.forEach((key, value) -> log.info(" *** {}: {}", key, value));
+			log.info(" ************************************************");
 		}
 		catch (FileNotFoundException e) {
 			log.info("server properties not found - creating default properties file");
