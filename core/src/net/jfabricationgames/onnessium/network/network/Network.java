@@ -1,5 +1,6 @@
 package net.jfabricationgames.onnessium.network.network;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -7,11 +8,10 @@ import com.esotericsoftware.kryonet.EndPoint;
 
 public class Network {
 	
-	//TODO make server configurable
-	public static final int PORT = 4711;
-	public static final String HOST = "localhost";
+	public static final int DEFAULT_PORT = 4711;
+	public static final String DEFAULT_HOST = "localhost";
 	
-	private static List<Class<?>> registeredClasses;
+	private static List<Class<?>> registeredClasses = new ArrayList<>();
 	
 	/**
 	 * Register DTOs centralised, so the implementation is shared in server and client.

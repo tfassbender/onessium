@@ -48,10 +48,10 @@ public class NetworkServer {
 		Network.registerDtoClasses(server);
 	}
 	
-	public void start() throws IOException {
-		log.info("Starting \"Onnessium\" server on port: {}", Network.PORT);
-		server.bind(Network.PORT);
+	public void start(int port) throws IOException {
+		log.info("Starting \"Onnessium\" server on port: {}", port);
+		server.bind(port);
 		server.start();
-		log.info("Server successfully started on port: {}", Network.PORT);
+		log.info("Server successfully started on port: {}", port);
 	}
 }

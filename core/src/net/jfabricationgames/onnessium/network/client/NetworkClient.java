@@ -26,7 +26,7 @@ public class NetworkClient {
 	
 	private void connectToServer() {
 		try {
-			client.connect(5000, Network.HOST, Network.PORT);
+			client.connect(5000, Network.DEFAULT_HOST, Network.DEFAULT_PORT);
 		}
 		catch (IOException e) {
 			Gdx.app.error(getClass().getSimpleName(), "Connection cound not be established", e);
