@@ -11,11 +11,12 @@ import net.jfabricationgames.onnessium.archunit.util.ArchUnitUtils.DoNotIncludeT
 import net.jfabricationgames.onnessium.archunit.util.PackageConstants;
 
 @AnalyzeClasses(packages = PackageConstants.TOP_LEVEL_PACKAGE, importOptions = DoNotIncludeTests.class)
-public class InputDependencyRules {
+public class ScreenDependencyRules {
 	
 	@ArchTest
-	private final ArchRule inputPackageHasNoDependenciesToOtherPackages = classes().that() //
-			.resideInAPackage("..onnessium.input") //
+	private final ArchRule screenPackagesDependencies = classes().that() //
+			.resideInAPackage("..onnessium.screen..") //
 			.should().onlyDependOnClassesThat() //
-			.resideInAnyPackage(ArchUnitUtils.addDefaultLibraryPackages("..onnessium.input", "..onnessium.input.."));
+			.resideInAnyPackage(ArchUnitUtils.addDefaultLibraryPackages("..onnessium.network..", "..onnessium.input..", //
+					"..onnessium.screen..", "..onnessium.user.."));
 }

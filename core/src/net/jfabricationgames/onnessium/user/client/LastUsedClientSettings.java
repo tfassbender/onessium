@@ -1,4 +1,4 @@
-package net.jfabricationgames.onnessium.network.client;
+package net.jfabricationgames.onnessium.user.client;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import com.badlogic.gdx.Gdx;
 
+import net.jfabricationgames.onnessium.network.client.PasswordEncryptor;
 import net.jfabricationgames.onnessium.network.network.Network;
 
 public class LastUsedClientSettings {
@@ -70,7 +71,7 @@ public class LastUsedClientSettings {
 			config.load(new FileInputStream(SETTINGS_PROPERTY_PATH));
 			Gdx.app.log(LastUsedClientSettings.class.getSimpleName(), " *********************************************");
 			Gdx.app.log(LastUsedClientSettings.class.getSimpleName(), " *** Client properties loaded successfully:");
-			config.forEach((property, value) -> Gdx.app.log(LastUsedClientSettings.class.getSimpleName(), "*** " + property + ": " + value));
+			config.forEach((property, value) -> Gdx.app.log(LastUsedClientSettings.class.getSimpleName(), " *** " + property + ": " + value));
 			Gdx.app.log(LastUsedClientSettings.class.getSimpleName(), " *********************************************");
 			return config;
 		}

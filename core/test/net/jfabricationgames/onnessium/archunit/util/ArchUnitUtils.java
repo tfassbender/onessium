@@ -1,5 +1,10 @@
 package net.jfabricationgames.onnessium.archunit.util;
 
+import java.util.regex.Pattern;
+
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.core.importer.Location;
+
 public class ArchUnitUtils {
 	
 	private ArchUnitUtils() {}
@@ -13,5 +18,15 @@ public class ArchUnitUtils {
 		allPackages[packages.length + 2] = PackageConstants.LIBRARY_JFG_CDI;
 		
 		return allPackages;
+	}
+	
+	public static class DoNotIncludeTests implements ImportOption {
+		
+		private static final String TEST_PATH = ".*/bin/test/.*";
+		
+		@Override
+		public boolean includes(Location location) {
+			return !Pattern.matches(TEST_PATH, location.asURI().getPath());
+		}
 	}
 }

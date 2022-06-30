@@ -1,4 +1,4 @@
-package net.jfabricationgames.onnessium.network.client;
+package net.jfabricationgames.onnessium.user.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
