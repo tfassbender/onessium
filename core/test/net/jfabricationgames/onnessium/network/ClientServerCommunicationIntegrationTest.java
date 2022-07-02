@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,15 +40,21 @@ public class ClientServerCommunicationIntegrationTest {
 	private ServerMessageHandlerRegistry handlerRegistry;
 	
 	@BeforeAll
-	public static void startServerAndClient() throws Exception {
+	public static void setup() throws Exception {
 		TestUtils.mockGdxApplication();
 		TestUtils.createCdiContainer();
 		
 		Network.registerClass(SimpleMessage.class);
 	}
 	
+	@AfterAll
+	public static void shutdown() {
+		client.disconnect();
+		server.stop();
+	}
+	
 	@BeforeEach
-	public void injectDependencies() throws Throwable {
+	public void injectDependenciesAndReset() throws Throwable {
 		if (client != null) {
 			client.disconnect();
 		}
@@ -153,11 +160,7 @@ public class ClientServerCommunicationIntegrationTest {
 		
 		client = new NetworkClient();
 		
-		// reduce the connection timeout, so the test doesn't take too long
-		Field field = NetworkClient.class.getDeclaredField("connectionTimeout");
-		field.setAccessible(true);
-		field.set(client, 100);
-		field.setAccessible(false);
+		ClientServerConnectionTestUtil.reduceConnectionTimeout(client);
 		
 		clientConnectException = null;
 		

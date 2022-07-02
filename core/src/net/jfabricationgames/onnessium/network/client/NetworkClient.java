@@ -79,6 +79,8 @@ public class NetworkClient {
 	public <T> void send(Object object, ClientMessageHandler<T> responseHandler, Class<T> responseType) {
 		addMessageHandler(responseType, new SelfRemovingMessageHandler<>(responseHandler, responseType));
 		client.sendTCP(object);
+		
+		//FIXME this method must return a CompletableFuture<Void> to be able to wait for the response of the server and handle it
 	}
 	
 	public <T> void addMessageHandler(Class<T> type, ClientMessageHandler<T> handler) {

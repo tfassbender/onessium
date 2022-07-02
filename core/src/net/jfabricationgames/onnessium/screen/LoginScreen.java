@@ -159,7 +159,7 @@ public class LoginScreen extends ScreenAdapter {
 		Gdx.app.log(getClass().getSimpleName(), "logging in to server " + hostUrl + ":" + port + " with user name: " + username);
 		validateInputAndExecute(username, pwd, hostUrl, hostPort, () -> {
 			try {
-				loginHandler.login(username, pwd, hostUrl, Integer.parseInt(hostPort));
+				loginHandler.login(username, pwd, hostUrl, Integer.parseInt(hostPort), () -> {}); //TODO add onComplete handler
 				dispose();
 			}
 			catch (LoginException e) {
@@ -177,7 +177,7 @@ public class LoginScreen extends ScreenAdapter {
 		Gdx.app.log(getClass().getSimpleName(), "signing up to server " + hostUrl + ":" + port + " with user name: " + username);
 		validateInputAndExecute(username, pwd, hostUrl, hostPort, () -> {
 			try {
-				loginHandler.signUp(username, pwd, hostUrl, Integer.parseInt(hostPort));
+				loginHandler.signUp(username, pwd, hostUrl, Integer.parseInt(hostPort), () -> {}); //TODO add onComplete handler
 				dispose();
 			}
 			catch (LoginException e) {

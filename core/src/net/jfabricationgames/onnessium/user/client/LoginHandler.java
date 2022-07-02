@@ -19,7 +19,7 @@ public class LoginHandler {
 		CdiContainer.injectTo(this);
 	}
 	
-	public void login(String username, String password, String host, int port) throws LoginException {
+	public void login(String username, String password, String host, int port, Runnable onComplete) throws LoginException {
 		try {
 			networkClient.connect(host, port) //
 					.exceptionally(t -> {
@@ -34,9 +34,10 @@ public class LoginHandler {
 								loginException = new LoginException(response.errorMessage);
 							}
 							else {
-								//TODO login successful
+								onComplete.run();
 							}
 						}, LoginDto.class);
+						//TODO wait for the response to the sent DTO
 					}) //
 					.get();
 		}
@@ -51,7 +52,7 @@ public class LoginHandler {
 		LastUsedClientSettings.store(username, password, host, port);
 	}
 	
-	public void signUp(String username, String password, String host, int port) throws LoginException {
+	public void signUp(String username, String password, String host, int port, Runnable onComplete) throws LoginException {
 		try {
 			networkClient.connect(host, port) //
 					.exceptionally(t -> {
@@ -66,9 +67,10 @@ public class LoginHandler {
 								loginException = new LoginException(response.errorMessage);
 							}
 							else {
-								//TODO sign up successful
+								onComplete.run();
 							}
 						}, SignUpDto.class);
+						//TODO wait for the response to the sent DTO
 					}) //
 					.get();
 		}

@@ -23,7 +23,12 @@ public class TestUtils {
 	private TestUtils() {}
 	
 	public static void createCdiContainer() throws CdiException, IOException {
-		CdiContainer.create("net.jfabricationgames.onnessium");
+		try {
+			CdiContainer.create("net.jfabricationgames.onnessium");
+		}
+		catch (CdiException e) {
+			// the CDI container might have already been initialised
+		}
 	}
 	
 	/**
