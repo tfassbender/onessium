@@ -11,10 +11,10 @@ import net.jfabricationgames.onnessium.archunit.util.ArchUnitUtils.DoNotIncludeT
 import net.jfabricationgames.onnessium.archunit.util.PackageConstants;
 
 @AnalyzeClasses(packages = PackageConstants.TOP_LEVEL_PACKAGE, importOptions = DoNotIncludeTests.class)
-public class PackageDependencyRules {
+public class GeneralPackageDependencyRules {
 	
 	@ArchTest
-	private final ArchRule noDependenciesToTopLevelGameClass = noClasses().that().resideInAPackage("..onnessium..") //
+	private final ArchRule noDependenciesToTopLevelGameClass = noClasses().that().resideInAPackage("..onnessium.*") //
 			.should().dependOnClassesThat().resideInAPackage("..onnessium");
 	
 	@ArchTest

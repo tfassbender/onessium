@@ -1,5 +1,7 @@
 package net.jfabricationgames.onnessium.util;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.ApplicationLogger;
@@ -13,9 +15,16 @@ import com.badlogic.gdx.Net;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Clipboard;
 
+import net.jfabricationgames.cdi.CdiContainer;
+import net.jfabricationgames.cdi.exception.CdiException;
+
 public class TestUtils {
 	
 	private TestUtils() {}
+	
+	public static void createCdiContainer() throws CdiException, IOException {
+		CdiContainer.create("net.jfabricationgames.onnessium");
+	}
 	
 	/**
 	 * Mock the Gdx.app variable, so the logging won't lead to an NPE.

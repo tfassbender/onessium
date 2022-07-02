@@ -26,12 +26,12 @@ public class LastUsedClientSettingsTest {
 	
 	@AfterAll
 	public static void restoreExistingConfigFile() {
-		LastUsedClientSettings.setSettingsPropertyPath(LastUsedClientSettings.LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH);
+		LastUsedClientSettings.resetSettingsPropertyPath();
 		new File(TEMPORARY_SETTINGS_FILE_PATH).delete();
 	}
 	
 	/**
-	 * Must be run as first, or in debug mode to succeed...
+	 * Must be run as first, or in debug mode to succeed... probably because some files cannot be deleted
 	 */
 	@Test
 	public void test01_LoadDefaultProperties() {

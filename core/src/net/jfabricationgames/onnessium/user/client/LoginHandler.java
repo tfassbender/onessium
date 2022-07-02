@@ -1,5 +1,7 @@
 package net.jfabricationgames.onnessium.user.client;
 
+import java.util.concurrent.ExecutionException;
+
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.client.NetworkClient;
@@ -18,20 +20,30 @@ public class LoginHandler {
 	}
 	
 	public void login(String username, String password, String host, int port) throws LoginException {
-		networkClient.connect(host, port, () -> {
-			networkClient.send(new LoginDto().setUsername(username).setPassword(password), response -> {
-				if (!response.successful) {
-					loginException = new LoginException(response.errorMessage);
-				}
-				else {
-					//TODO login successful
-				}
-			}, LoginDto.class);
-		}, ioException -> {
-			loginException = new LoginException("Login failed - Cannot connect to server", ioException);
-		});
+		try {
+			networkClient.connect(host, port) //
+					.exceptionally(t -> {
+						// the connection could not be established
+						loginException = new LoginException("Login failed - Cannot connect to server", t);
+						return null;
+					}) //
+					.thenAccept(v -> {
+						// the connection was successfully established, so send a login request
+						networkClient.send(new LoginDto().setUsername(username).setPassword(password), response -> {
+							if (!response.successful) {
+								loginException = new LoginException(response.errorMessage);
+							}
+							else {
+								//TODO login successful
+							}
+						}, LoginDto.class);
+					}) //
+					.get();
+		}
+		catch (InterruptedException | ExecutionException e) {
+			loginException = new LoginException("Login failed - Cannot connect to server", e);
+		}
 		
-		//TODO this won't wait for the response
 		if (loginException != null) {
 			throw loginException;
 		}
@@ -40,21 +52,30 @@ public class LoginHandler {
 	}
 	
 	public void signUp(String username, String password, String host, int port) throws LoginException {
-		networkClient.connect(host, port, () -> {
-			networkClient.send(new SignUpDto().setUsername(username).setPassword(password), response -> {
-				if (!response.successful) {
-					loginException = new LoginException(response.errorMessage);
-				}
-				else {
-					//TODO sign up successful
-				}
-			}, SignUpDto.class);
-			//TODO handle server response
-		}, ioException -> {
-			loginException = new LoginException("Sign up failed - Cannot connect to server", ioException);
-		});
+		try {
+			networkClient.connect(host, port) //
+					.exceptionally(t -> {
+						// the connection could not be established
+						loginException = new LoginException("Sign up failed - Cannot connect to server", t);
+						return null;
+					}) //
+					.thenAccept(v -> {
+						// the connection was successfully established, so send a sign up request
+						networkClient.send(new SignUpDto().setUsername(username).setPassword(password), response -> {
+							if (!response.successful) {
+								loginException = new LoginException(response.errorMessage);
+							}
+							else {
+								//TODO sign up successful
+							}
+						}, SignUpDto.class);
+					}) //
+					.get();
+		}
+		catch (InterruptedException | ExecutionException e) {
+			loginException = new LoginException("Sign up failed - Cannot connect to server", e);
+		}
 		
-		//TODO this won't wait for the response
 		if (loginException != null) {
 			throw loginException;
 		}

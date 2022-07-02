@@ -149,4 +149,11 @@ public class LastUsedClientSettings {
 	protected static void setSettingsPropertyPath(String path) {
 		SETTINGS_PROPERTY_PATH = path;
 	}
+	
+	/**
+	 * Use after testing, to not overwrite the existing settings.
+	 */
+	protected static void resetSettingsPropertyPath() {
+		SETTINGS_PROPERTY_PATH = LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH;
+	}
 }

@@ -14,6 +14,14 @@ public class ServerMessageHandlerRegistry {
 		handlers.put(type, handler);
 	}
 	
+	public <T> void removeHandler(Class<T> type) {
+		handlers.remove(type);
+	}
+	
+	public void removeAllHandlers() {
+		handlers.clear();
+	}
+	
 	public void handleMessage(NetworkConnection connection, Object message) {
 		handleMessage(connection, message, message.getClass());
 	}

@@ -11,8 +11,10 @@ import com.esotericsoftware.kryonet.Server;
 
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
+import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
 import net.jfabricationgames.onnessium.network.network.Network;
 
+@ApplicationScoped
 public class NetworkServer {
 	
 	// the server is not started with the LibGDX Framework, so it can use a logger
@@ -56,5 +58,10 @@ public class NetworkServer {
 		server.bind(port);
 		server.start();
 		log.info("Server successfully started on port: {}", port);
+	}
+	
+	public void stop() {
+		log.info("Stopping \"Onnessium\" server.");
+		server.stop();
 	}
 }

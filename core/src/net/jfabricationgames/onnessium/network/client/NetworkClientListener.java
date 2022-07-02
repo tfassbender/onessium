@@ -2,6 +2,7 @@ package net.jfabricationgames.onnessium.network.client;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,7 +15,7 @@ import net.jfabricationgames.cdi.CdiContainer;
 
 public class NetworkClientListener extends Listener {
 	
-	private Map<Class<?>, List<ClientMessageHandler<?>>> messageHandlers;
+	private Map<Class<?>, List<ClientMessageHandler<?>>> messageHandlers = new HashMap<>();
 	
 	public NetworkClientListener() {
 		CdiContainer.injectTo(this);
@@ -58,5 +59,9 @@ public class NetworkClientListener extends Listener {
 	
 	protected <T> void removeMessageHandler(Class<T> type, ClientMessageHandler<T> handler) {
 		messageHandlers.computeIfAbsent(type, t -> new ArrayList<>()).remove(handler);
+	}
+	
+	protected <T> void removeAllMessageHandlersForType(Class<T> type) {
+		messageHandlers.remove(type);
 	}
 }
