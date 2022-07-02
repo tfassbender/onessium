@@ -13,6 +13,7 @@ import net.jfabricationgames.onnessium.network.network.Network;
 public class NetworkClient {
 	
 	private Client client;
+	private NetworkClientListener listener;
 	
 	public NetworkClient() {
 		client = new Client();
@@ -20,7 +21,8 @@ public class NetworkClient {
 		
 		Network.registerDtoClasses(client);
 		
-		client.addListener(new NetworkClientListener());
+		listener = new NetworkClientListener();
+		client.addListener(listener);
 	}
 	
 	public void connect(String host, int port, Runnable onSuccess, Consumer<IOException> onError) {
@@ -53,5 +55,50 @@ public class NetworkClient {
 	
 	public boolean isConnected() {
 		return client.isConnected();
+	}
+	
+	/**
+	 * Send an object to the server (fire and forget) using TCP.
+	 * The objects class must be registered in the NetworkDtoRegistry for the client to be able to serialise and send it.
+	 */
+	public void send(Object object) {
+		client.sendTCP(object);
+	}
+	
+	/**
+	 * Send an object to the server using TCP and register a responseHandler that listens for a response of the server.
+	 * NOTE: After the response handler received the answer from the server it is automatically unsubscribed from the listener. 
+	 */
+	public <T> void send(Object object, ClientMessageHandler<T> responseHandler, Class<T> responseType) {
+		addMessageHandler(responseType, new SelfRemovingMessageHandler<>(responseHandler, responseType));
+	}
+	
+	public <T> void addMessageHandler(Class<T> type, ClientMessageHandler<T> handler) {
+		listener.addMessageHandler(type, handler);
+	}
+	
+	public <T> void removeMessageHandler(Class<T> type, ClientMessageHandler<T> handler) {
+		listener.removeMessageHandler(type, handler);
+	}
+	
+	/**
+	 * A ClientMessageHandler implementation, that will remove itself from the listener subscription, after receiving the message.
+	 * The received message is passed on to the wrapped handler.
+	 */
+	private class SelfRemovingMessageHandler<T> implements ClientMessageHandler<T> {
+		
+		private ClientMessageHandler<T> wrappedHandler;
+		private Class<T> responseType;
+		
+		private SelfRemovingMessageHandler(ClientMessageHandler<T> wrappedHandler, Class<T> responseType) {
+			this.wrappedHandler = wrappedHandler;
+			this.responseType = responseType;
+		}
+		
+		@Override
+		public void handleMessage(T message) {
+			wrappedHandler.handleMessage(message);
+			removeMessageHandler(responseType, this);
+		}
 	}
 }

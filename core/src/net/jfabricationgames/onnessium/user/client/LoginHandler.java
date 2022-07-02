@@ -3,6 +3,8 @@ package net.jfabricationgames.onnessium.user.client;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.client.NetworkClient;
+import net.jfabricationgames.onnessium.user.dto.LoginDto;
+import net.jfabricationgames.onnessium.user.dto.SignUpDto;
 
 public class LoginHandler {
 	
@@ -17,12 +19,19 @@ public class LoginHandler {
 	
 	public void login(String username, String password, String host, int port) throws LoginException {
 		networkClient.connect(host, port, () -> {
-			// TODO login 
-			// TODO handle login errors
+			networkClient.send(new LoginDto().setUsername(username).setPassword(password), response -> {
+				if (!response.successful) {
+					loginException = new LoginException(response.errorMessage);
+				}
+				else {
+					//TODO login successful
+				}
+			}, LoginDto.class);
 		}, ioException -> {
 			loginException = new LoginException("Login failed - Cannot connect to server", ioException);
 		});
 		
+		//TODO this won't wait for the response
 		if (loginException != null) {
 			throw loginException;
 		}
@@ -32,12 +41,20 @@ public class LoginHandler {
 	
 	public void signUp(String username, String password, String host, int port) throws LoginException {
 		networkClient.connect(host, port, () -> {
-			// TODO signUp
-			// TODO handle sign up errors
+			networkClient.send(new SignUpDto().setUsername(username).setPassword(password), response -> {
+				if (!response.successful) {
+					loginException = new LoginException(response.errorMessage);
+				}
+				else {
+					//TODO sign up successful
+				}
+			}, SignUpDto.class);
+			//TODO handle server response
 		}, ioException -> {
 			loginException = new LoginException("Sign up failed - Cannot connect to server", ioException);
 		});
 		
+		//TODO this won't wait for the response
 		if (loginException != null) {
 			throw loginException;
 		}

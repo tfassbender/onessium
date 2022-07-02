@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.jfabricationgames.cdi.CdiContainer;
+import net.jfabricationgames.onnessium.NetworkDtoRegistry;
 import net.jfabricationgames.onnessium.network.network.Network;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 
@@ -23,7 +24,8 @@ public class ServerMain {
 	public static final String SERVER_PROPERTY_PORT = "port";
 	
 	public static void main(String[] args) throws IOException {
-		CdiContainer.create("net.jfabricationgames.onnessium");
+		initializeCdiContainer();
+		initializeNetworkClasses();
 		
 		Properties config = loadOrCreateServerConfig();
 		
@@ -40,6 +42,14 @@ public class ServerMain {
 		server.start(port);
 		
 		Thread.setDefaultUncaughtExceptionHandler(new ServerGlobalExceptionHandler());
+	}
+	
+	private static void initializeCdiContainer() throws IOException {
+		CdiContainer.create("net.jfabricationgames.onnessium");
+	}
+	
+	private static void initializeNetworkClasses() {
+		NetworkDtoRegistry.initializeNetworkClasses();
 	}
 	
 	private static Properties loadOrCreateServerConfig() throws IOException {

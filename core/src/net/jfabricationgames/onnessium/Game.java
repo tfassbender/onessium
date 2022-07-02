@@ -5,6 +5,8 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.badlogic.gdx.Gdx;
+
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.exception.CdiException;
 import net.jfabricationgames.onnessium.screen.LoginScreen;
@@ -35,8 +37,8 @@ public class Game extends com.badlogic.gdx.Game {
 	@Override
 	public void create() {
 		preGameConfigurator.run();
-		
 		initializeCdiContainer();
+		initializeNetworkClasses();
 		
 		// do not call this from the constructor, or it will cause an UnsatisfiedLinkError when creating a SpriteBatch or a Stage in LoginScreen
 		setScreen(new LoginScreen());
@@ -48,6 +50,11 @@ public class Game extends com.badlogic.gdx.Game {
 		}
 		catch (CdiException | IOException e) {
 			log.error("Could not create CDI container", e);
+			Gdx.app.exit();
 		}
+	}
+	
+	private void initializeNetworkClasses() {
+		NetworkDtoRegistry.initializeNetworkClasses();
 	}
 }
