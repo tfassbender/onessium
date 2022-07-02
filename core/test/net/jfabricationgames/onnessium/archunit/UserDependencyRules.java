@@ -17,5 +17,5 @@ public class UserDependencyRules {
 			.resideInAPackage("..onnessium.user..") //
 			.should().onlyDependOnClassesThat() //
 			.resideInAnyPackage(PackageConstants.LIBRARY_JAVA, PackageConstants.LIBRARY_LIBGDX, PackageConstants.LIBRARY_JFG_CDI, //
-					"..onnessium.network..", "..onnessium.user..");  //
+					PackageConstants.UTILS_PACKAGE, "..onnessium.network..", "..onnessium.user..");  //
 }

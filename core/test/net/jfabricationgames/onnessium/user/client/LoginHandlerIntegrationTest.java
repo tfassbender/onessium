@@ -54,12 +54,16 @@ public class LoginHandlerIntegrationTest {
 		
 		server = new NetworkServer();
 		server.start(ClientServerConnectionTestUtil.PORT);
+		
+		loginHandler.setResponseWaitingTimeInMilliseconds(10);
 	}
 	
 	@AfterEach
 	public void disconnect() {
 		client.disconnect();
 		server.stop();
+		
+		loginHandler.resetResponseWaitingTimeInMilliseconds();
 	}
 	
 	@Test
@@ -76,17 +80,17 @@ public class LoginHandlerIntegrationTest {
 	
 	@Test
 	public void testSignUpNotSuccessful() throws LoginException {
+		String errorMessage = "Signup not possible";
 		handlerRegistry.registerHandler(SignUpDto.class, (connection, dto) -> {
 			dto.setSuccessful(false); // respond that the sign up was NOT successful
+			dto.setErrorMessage(errorMessage);
 			connection.sendTCP(dto);
 		});
 		
 		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.signUp("Arthur Dent", "42", //
 				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //
 				() -> {}));
-		assertEquals("Sign up failed - Cannot connect to server", loginException.getMessage());
-		
-		//TODO the test fails, because the LoginHandler does not wait for the response of the server
+		assertEquals(errorMessage, loginException.getMessage());
 	}
 	
 	@Test
@@ -121,17 +125,17 @@ public class LoginHandlerIntegrationTest {
 	
 	@Test
 	public void testLoginNotSuccessful() throws LoginException {
+		String errorMessage = "Login not possible";
 		handlerRegistry.registerHandler(LoginDto.class, (connection, dto) -> {
 			dto.setSuccessful(false); // respond that the login was NOT successful
+			dto.setErrorMessage(errorMessage);
 			connection.sendTCP(dto);
 		});
 		
 		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.login("Arthur Dent", "42", //
 				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //
 				() -> {}));
-		assertEquals("Login failed - Cannot connect to server", loginException.getMessage());
-		
-		//TODO the test fails, because the LoginHandler does not wait for the response of the server
+		assertEquals(errorMessage, loginException.getMessage());
 	}
 	
 	@Test

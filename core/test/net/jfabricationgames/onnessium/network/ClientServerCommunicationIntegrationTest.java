@@ -7,6 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -104,7 +108,7 @@ public class ClientServerCommunicationIntegrationTest {
 	}
 	
 	@Test
-	public void testSendMessageToServerAndHandleSingleResponse() throws InterruptedException {
+	public void testSendMessageToServerAndHandleSingleResponse() throws InterruptedException, ExecutionException, TimeoutException {
 		// echo the simple message back to the client
 		handlerRegistry.registerHandler(SimpleMessage.class, (connection, message) -> connection.sendTCP(message));
 		
@@ -114,13 +118,26 @@ public class ClientServerCommunicationIntegrationTest {
 		String message2 = "another message";
 		
 		// send a message with a response handler, for a single response
-		client.send(new SimpleMessage().setMessage(message1), response -> messageWrapper.wrapped = response.message, SimpleMessage.class);
+		CompletableFuture<Void> responseFuture = client.send(new SimpleMessage().setMessage(message1), //
+				response -> messageWrapper.wrapped = response.message, SimpleMessage.class);
 		// the second message is not handled, because the handler was removed after handling the response
 		client.send(new SimpleMessage().setMessage(message2));
 		
-		Thread.sleep(10); // wait for the message to arrive
+		responseFuture.get(5, TimeUnit.SECONDS);
 		
 		assertEquals(message1, messageWrapper.wrapped);
+	}
+	
+	@Test
+	public void testSendMessageToServerAndHandleSingleResponseWithoutServerAnswering() throws Exception {
+		// do not respond to the request on server side
+		handlerRegistry.registerHandler(SimpleMessage.class, (connection, message) -> {});
+		
+		// send a message with a response handler
+		CompletableFuture<Void> responseFuture = client.send(new SimpleMessage().setMessage("message content"), //
+				response -> {}, SimpleMessage.class);
+		
+		assertThrows(TimeoutException.class, () -> responseFuture.get(10, TimeUnit.MILLISECONDS));
 	}
 	
 	@Test

@@ -74,13 +74,45 @@ public class NetworkClient {
 	
 	/**
 	 * Send an object to the server using TCP and register a responseHandler that listens for a response of the server.
-	 * NOTE: After the response handler received the answer from the server it is automatically unsubscribed from the listener. 
+	 * This method will then return a CompletableFuture, that is notified, when the expected response from the server 
+	 * was handled in the responseHandler parameter.
+	 * 
+	 * NOTE: After the response handler received the answer from the server it is automatically unsubscribed from the listener.
+	 * 
+	 * NOTE: The typical usage of this method is:
+	 * <code>
+	 * send(object, responseHandler, responseType) //
+	 *     .thenAccept(() -> {}) // (optional) execute anything after the response was received and handled
+	 *     .get(5, TimeUnit.SECONDS); // wait for the response of the server (for a maximum of 5 seconds)
+	 * </code>
+	 * 
+	 * WARNING: The returned CompletableFuture must be handled with a <code>.get(5, TimeUnit.SECONDS)</code> call (where the 
+	 * maximum time of waiting is variable) to make sure that the thread will not be blocked forever, if the server does not
+	 * respond (maybe because of an exception or for any other cause).
 	 */
-	public <T> void send(Object object, ClientMessageHandler<T> responseHandler, Class<T> responseType) {
-		addMessageHandler(responseType, new SelfRemovingMessageHandler<>(responseHandler, responseType));
+	public <T> CompletableFuture<Void> send(Object object, ClientMessageHandler<T> responseHandler, Class<T> responseType) {
+		CompletableFuture<Void> waitingFuture = createWaitingCompletableFuture();
+		addMessageHandler(responseType, new SelfRemovingMessageHandler<>(responseHandler, responseType, waitingFuture));
 		client.sendTCP(object);
 		
-		//FIXME this method must return a CompletableFuture<Void> to be able to wait for the response of the server and handle it
+		return waitingFuture;
+	}
+	
+	/**
+	 * Create a CompletableFuture that just waits, till the CompeltableFuture.complete method is called on it.
+	 */
+	private CompletableFuture<Void> createWaitingCompletableFuture() {
+		return CompletableFuture.runAsync(() -> {
+			try {
+				synchronized (this) {
+					wait();
+				}
+			}
+			catch (InterruptedException e) {
+				// should never happen
+				throw new IllegalStateException(e);
+			}
+		});
 	}
 	
 	public <T> void addMessageHandler(Class<T> type, ClientMessageHandler<T> handler) {
@@ -103,16 +135,20 @@ public class NetworkClient {
 		
 		private ClientMessageHandler<T> wrappedHandler;
 		private Class<T> responseType;
+		private CompletableFuture<Void> waitingFuture;
 		
-		private SelfRemovingMessageHandler(ClientMessageHandler<T> wrappedHandler, Class<T> responseType) {
+		private SelfRemovingMessageHandler(ClientMessageHandler<T> wrappedHandler, Class<T> responseType, CompletableFuture<Void> waitingFuture) {
 			this.wrappedHandler = wrappedHandler;
 			this.responseType = responseType;
+			this.waitingFuture = waitingFuture;
 		}
 		
 		@Override
 		public void handleMessage(T message) {
 			wrappedHandler.handleMessage(message);
 			removeMessageHandler(responseType, this);
+			
+			waitingFuture.complete(null); // complete the future, so it stops waiting, after the response was received
 		}
 	}
 }
