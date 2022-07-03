@@ -6,8 +6,8 @@ import java.util.concurrent.ExecutionException;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.client.NetworkClient;
-import net.jfabricationgames.onnessium.user.dto.LoginDto;
-import net.jfabricationgames.onnessium.user.dto.SignUpDto;
+import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
+import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.util.Wrapper;
 
 public class LoginHandler {

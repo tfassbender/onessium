@@ -15,12 +15,12 @@ import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.ClientServerConnectionTestUtil;
 import net.jfabricationgames.onnessium.network.client.NetworkClient;
+import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
+import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.shared.Network;
 import net.jfabricationgames.onnessium.user.client.LoginHandler.LoginException;
-import net.jfabricationgames.onnessium.user.dto.LoginDto;
-import net.jfabricationgames.onnessium.user.dto.SignUpDto;
 import net.jfabricationgames.onnessium.util.TestUtils;
 import net.jfabricationgames.onnessium.util.Wrapper;
 

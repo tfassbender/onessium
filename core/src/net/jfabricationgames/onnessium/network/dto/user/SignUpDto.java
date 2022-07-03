@@ -1,6 +1,6 @@
-package net.jfabricationgames.onnessium.user.dto;
+package net.jfabricationgames.onnessium.network.dto.user;
 
-public class LoginDto {
+public class SignUpDto {
 	
 	public String username;
 	public String password;
@@ -8,22 +8,22 @@ public class LoginDto {
 	public boolean successful;
 	public String errorMessage;
 	
-	public LoginDto setUsername(String username) {
+	public SignUpDto setUsername(String username) {
 		this.username = username;
 		return this;
 	}
 	
-	public LoginDto setPassword(String password) {
+	public SignUpDto setPassword(String password) {
 		this.password = password;
 		return this;
 	}
 	
-	public LoginDto setSuccessful(boolean successful) {
+	public SignUpDto setSuccessful(boolean successful) {
 		this.successful = successful;
 		return this;
 	}
 	
-	public LoginDto setErrorMessage(String errorMessage) {
+	public SignUpDto setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 		return this;
 	}

@@ -15,14 +15,14 @@ import com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.NetworkDtoRegistry;
+import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
+import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.server.handler.KeepAliveServerHandler;
 import net.jfabricationgames.onnessium.network.server.handler.LoginServerHandler;
 import net.jfabricationgames.onnessium.network.server.handler.SignUpServerHandler;
 import net.jfabricationgames.onnessium.network.shared.Network;
-import net.jfabricationgames.onnessium.user.dto.LoginDto;
-import net.jfabricationgames.onnessium.user.dto.SignUpDto;
 
 public class ServerMain {
 	

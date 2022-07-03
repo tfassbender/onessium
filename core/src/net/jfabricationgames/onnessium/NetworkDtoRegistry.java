@@ -3,9 +3,9 @@ package net.jfabricationgames.onnessium;
 import java.util.Arrays;
 import java.util.List;
 
+import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
+import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.shared.Network;
-import net.jfabricationgames.onnessium.user.dto.LoginDto;
-import net.jfabricationgames.onnessium.user.dto.SignUpDto;
 
 /**
  * Register all network classes in this central registry, to not create a dependency from the network package to every other package.

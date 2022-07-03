@@ -2,12 +2,12 @@ package net.jfabricationgames.onnessium.network.server.handler;
 
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
+import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.server.NetworkConnection;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandler;
 import net.jfabricationgames.onnessium.network.server.user.UserAccount;
 import net.jfabricationgames.onnessium.network.server.user.UserManager;
 import net.jfabricationgames.onnessium.network.shared.PasswordEncryptor;
-import net.jfabricationgames.onnessium.user.dto.SignUpDto;
 
 public class SignUpServerHandler implements ServerMessageHandler<SignUpDto> {
 	
