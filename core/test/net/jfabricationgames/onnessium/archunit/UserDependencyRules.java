@@ -13,7 +13,7 @@ import net.jfabricationgames.onnessium.archunit.util.PackageConstants;
 public class UserDependencyRules {
 	
 	@ArchTest
-	private final ArchRule screenPackagesDependencies = classes().that() //
+	private final ArchRule userPackagesDependencies = classes().that() //
 			.resideInAPackage("..onnessium.user..") //
 			.should().onlyDependOnClassesThat() //
 			.resideInAnyPackage(PackageConstants.LIBRARY_JAVA, PackageConstants.LIBRARY_LIBGDX, PackageConstants.LIBRARY_JFG_CDI, //

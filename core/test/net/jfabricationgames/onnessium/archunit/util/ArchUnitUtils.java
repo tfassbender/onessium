@@ -22,11 +22,13 @@ public class ArchUnitUtils {
 	
 	public static class DoNotIncludeTests implements ImportOption {
 		
-		private static final String TEST_PATH = ".*/bin/test/.*";
+		private static final String TEST_PATH_IDE = ".*/bin/test/.*";
+		private static final String TEST_PATH_GRADLE = ".*/build/classes/java/test/.*";
 		
 		@Override
 		public boolean includes(Location location) {
-			return !Pattern.matches(TEST_PATH, location.asURI().getPath());
+			String path = location.asURI().getPath();
+			return !Pattern.matches(TEST_PATH_IDE, path) && !Pattern.matches(TEST_PATH_GRADLE, path);
 		}
 	}
 }
