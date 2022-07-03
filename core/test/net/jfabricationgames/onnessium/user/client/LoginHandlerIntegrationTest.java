@@ -3,6 +3,9 @@ package net.jfabricationgames.onnessium.user.client;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.File;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +39,8 @@ public class LoginHandlerIntegrationTest {
 		TestUtils.mockGdxApplication();
 		TestUtils.createCdiContainer();
 		
+		LastUsedClientSettings.setSettingsPropertyPath(LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH);
+		
 		Network.registerClass(LoginDto.class);
 		Network.registerClass(SignUpDto.class);
 	}
@@ -64,6 +69,12 @@ public class LoginHandlerIntegrationTest {
 		server.stop();
 		
 		loginHandler.resetResponseWaitingTimeInMilliseconds();
+	}
+	
+	@AfterAll
+	public static void restoreExistingConfigFile() {
+		LastUsedClientSettings.resetSettingsPropertyPath();
+		new File(LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH).delete();
 	}
 	
 	@Test
