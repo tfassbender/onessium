@@ -16,7 +16,7 @@ public class NetworkClient {
 	
 	public static final int DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS = 5000;
 	
-	private int connectionTimeoutInMilliseconds = 5000;
+	private int connectionTimeoutInMilliseconds = 5000; // can be changed in tests (via reflection)
 	
 	private Client client;
 	private NetworkClientListener listener;
@@ -85,13 +85,14 @@ public class NetworkClient {
 	 * NOTE: The typical usage of this method is:
 	 * <code>
 	 * send(object, responseHandler, responseType) //
-	 *     .thenAccept(() -> {}) // (optional) execute anything after the response was received and handled
-	 *     .get(5, TimeUnit.SECONDS); // wait for the response of the server (for a maximum of 5 seconds)
+	 *     .exceptionally(throwable -> { // the exceptionally part is optional
+	 *       // handle the exception
+	 *       return null; // return type must be Void
+	 *     })
+	 *     .get(); // wait for the response of the server (for a maximum of 5 seconds)
 	 * </code>
 	 * 
-	 * WARNING: The returned CompletableFuture must be handled with a <code>.get(5, TimeUnit.SECONDS)</code> call (where the 
-	 * maximum time of waiting is variable) to make sure that the thread will not be blocked forever, if the server does not
-	 * respond (maybe because of an exception or for any other cause).
+	 * NOTE: To use a custom maximum waiting time use the method {@link NetworkClient#send(Object, ClientMessageHandler, Class, long)}.
 	 */
 	public <T> CompletableFuture<Void> send(Object object, ClientMessageHandler<T> responseHandler, Class<T> responseType) {
 		return send(object, responseHandler, responseType, DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS);
