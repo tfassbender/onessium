@@ -1,4 +1,4 @@
-package net.jfabricationgames.onnessium.network.network;
+package net.jfabricationgames.onnessium.network.shared;
 
 import java.util.ArrayList;
 import java.util.List;

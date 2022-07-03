@@ -1,4 +1,4 @@
-package net.jfabricationgames.onnessium.network.network.exception;
+package net.jfabricationgames.onnessium.network.shared.exception;
 
 public class ConnectException extends RuntimeException {
 	

@@ -2,7 +2,7 @@
 A turn-based strategy game, created with libGdx
 
 ## Development
-Onessium is planed to be a strategy game that is turn based to focus on the strategy instead of which player can create his build-chains faster.  
+Onnessium is planed to be a strategy game that is turn based to focus on the strategy instead of which player can create his build-chains faster.  
 Because of the lack of textures, the game will only be playable in a tactical overview (only symbols for units, but no textures).
 
 ## Build Notes

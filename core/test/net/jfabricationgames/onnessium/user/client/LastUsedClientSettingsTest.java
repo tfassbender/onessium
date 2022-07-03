@@ -10,7 +10,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import net.jfabricationgames.onnessium.network.network.Network;
+import net.jfabricationgames.onnessium.network.shared.Network;
 import net.jfabricationgames.onnessium.util.TestUtils;
 
 @TestMethodOrder(MethodOrderer.MethodName.class)

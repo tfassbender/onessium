@@ -15,9 +15,9 @@ import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.ClientServerConnectionTestUtil;
 import net.jfabricationgames.onnessium.network.client.NetworkClient;
-import net.jfabricationgames.onnessium.network.network.Network;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
+import net.jfabricationgames.onnessium.network.shared.Network;
 import net.jfabricationgames.onnessium.user.client.LoginHandler.LoginException;
 import net.jfabricationgames.onnessium.user.dto.LoginDto;
 import net.jfabricationgames.onnessium.user.dto.SignUpDto;
@@ -79,7 +79,7 @@ public class LoginHandlerIntegrationTest {
 	
 	@Test
 	public void testSignUpSuccessful() throws LoginException {
-		handlerRegistry.registerHandler(SignUpDto.class, (connection, dto) -> {
+		handlerRegistry.addHandler(SignUpDto.class, (connection, dto) -> {
 			dto.setSuccessful(true); // respond that the sign up was successful
 			connection.sendTCP(dto);
 		});
@@ -92,7 +92,7 @@ public class LoginHandlerIntegrationTest {
 	@Test
 	public void testSignUpNotSuccessful() throws LoginException {
 		String errorMessage = "Signup not possible";
-		handlerRegistry.registerHandler(SignUpDto.class, (connection, dto) -> {
+		handlerRegistry.addHandler(SignUpDto.class, (connection, dto) -> {
 			dto.setSuccessful(false); // respond that the sign up was NOT successful
 			dto.setErrorMessage(errorMessage);
 			connection.sendTCP(dto);
@@ -118,7 +118,7 @@ public class LoginHandlerIntegrationTest {
 	@Test
 	public void testSignUpNotSuccessfulBecauseServerDoesNotRespond() throws LoginException {
 		// do not respond to the login request
-		handlerRegistry.registerHandler(SignUpDto.class, (connection, dto) -> {});
+		handlerRegistry.addHandler(SignUpDto.class, (connection, dto) -> {});
 		
 		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.signUp("Arthur Dent", "42", //
 				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //
@@ -128,7 +128,7 @@ public class LoginHandlerIntegrationTest {
 	
 	@Test
 	public void testLoginSuccessful() throws LoginException {
-		handlerRegistry.registerHandler(LoginDto.class, (connection, dto) -> {
+		handlerRegistry.addHandler(LoginDto.class, (connection, dto) -> {
 			dto.setSuccessful(true); // respond that the login was successful
 			connection.sendTCP(dto);
 		});
@@ -141,7 +141,7 @@ public class LoginHandlerIntegrationTest {
 	@Test
 	public void testLoginNotSuccessful() throws LoginException {
 		String errorMessage = "Login not possible";
-		handlerRegistry.registerHandler(LoginDto.class, (connection, dto) -> {
+		handlerRegistry.addHandler(LoginDto.class, (connection, dto) -> {
 			dto.setSuccessful(false); // respond that the login was NOT successful
 			dto.setErrorMessage(errorMessage);
 			connection.sendTCP(dto);
@@ -167,7 +167,7 @@ public class LoginHandlerIntegrationTest {
 	@Test
 	public void testLoginNotSuccessfulBecauseServerDoesNotRespond() throws LoginException {
 		// do not respond to the login request
-		handlerRegistry.registerHandler(LoginDto.class, (connection, dto) -> {});
+		handlerRegistry.addHandler(LoginDto.class, (connection, dto) -> {});
 		
 		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.login("Arthur Dent", "42", //
 				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //

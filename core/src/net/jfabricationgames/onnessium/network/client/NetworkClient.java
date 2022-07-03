@@ -7,9 +7,9 @@ import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
 
 import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
-import net.jfabricationgames.onnessium.network.network.Network;
-import net.jfabricationgames.onnessium.network.network.exception.ConnectException;
-import net.jfabricationgames.onnessium.network.network.exception.ResponseNotReceivedException;
+import net.jfabricationgames.onnessium.network.shared.Network;
+import net.jfabricationgames.onnessium.network.shared.exception.ConnectException;
+import net.jfabricationgames.onnessium.network.shared.exception.ResponseNotReceivedException;
 
 @ApplicationScoped
 public class NetworkClient {

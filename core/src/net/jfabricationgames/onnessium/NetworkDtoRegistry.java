@@ -3,7 +3,7 @@ package net.jfabricationgames.onnessium;
 import java.util.Arrays;
 import java.util.List;
 
-import net.jfabricationgames.onnessium.network.network.Network;
+import net.jfabricationgames.onnessium.network.shared.Network;
 import net.jfabricationgames.onnessium.user.dto.LoginDto;
 import net.jfabricationgames.onnessium.user.dto.SignUpDto;
 

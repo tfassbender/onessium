@@ -1,4 +1,4 @@
-package net.jfabricationgames.onnessium.network.client;
+package net.jfabricationgames.onnessium.network.shared;
 
 /**
  * Encrypts passwords with a simple vigenere encryption.

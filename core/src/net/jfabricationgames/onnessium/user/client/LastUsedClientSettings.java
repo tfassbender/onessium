@@ -9,8 +9,8 @@ import java.util.Properties;
 
 import com.badlogic.gdx.Gdx;
 
-import net.jfabricationgames.onnessium.network.client.PasswordEncryptor;
-import net.jfabricationgames.onnessium.network.network.Network;
+import net.jfabricationgames.onnessium.network.shared.Network;
+import net.jfabricationgames.onnessium.network.shared.PasswordEncryptor;
 
 public class LastUsedClientSettings {
 	

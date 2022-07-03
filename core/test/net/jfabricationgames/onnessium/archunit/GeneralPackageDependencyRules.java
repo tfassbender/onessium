@@ -1,7 +1,6 @@
 package net.jfabricationgames.onnessium.archunit;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-import static com.tngtech.archunit.library.DependencyRules.NO_CLASSES_SHOULD_DEPEND_UPPER_PACKAGES;
 
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
@@ -14,9 +13,6 @@ import net.jfabricationgames.onnessium.archunit.util.PackageConstants;
 public class GeneralPackageDependencyRules {
 	
 	@ArchTest
-	private final ArchRule noDependenciesToTopLevelGameClass = noClasses().that().resideInAPackage("..onnessium.*") //
+	private final ArchRule noDependenciesToTopLevelPackage = noClasses().that().resideInAPackage("..onnessium.*") //
 			.should().dependOnClassesThat().resideInAPackage("..onnessium");
-	
-	@ArchTest
-	private final ArchRule noAccessesToUpperPackage = NO_CLASSES_SHOULD_DEPEND_UPPER_PACKAGES;
 }

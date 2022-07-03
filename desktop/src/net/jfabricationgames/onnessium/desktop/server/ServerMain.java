@@ -10,10 +10,19 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive;
+
 import net.jfabricationgames.cdi.CdiContainer;
+import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.NetworkDtoRegistry;
-import net.jfabricationgames.onnessium.network.network.Network;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
+import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
+import net.jfabricationgames.onnessium.network.server.handler.KeepAliveServerHandler;
+import net.jfabricationgames.onnessium.network.server.handler.LoginServerHandler;
+import net.jfabricationgames.onnessium.network.server.handler.SignUpServerHandler;
+import net.jfabricationgames.onnessium.network.shared.Network;
+import net.jfabricationgames.onnessium.user.dto.LoginDto;
+import net.jfabricationgames.onnessium.user.dto.SignUpDto;
 
 public class ServerMain {
 	
@@ -23,9 +32,20 @@ public class ServerMain {
 	public static final String SERVER_PROPERTIES_PATH = SERVER_PROPERTIES_DIRECTORY_PATH + "/server_config.properties";
 	public static final String SERVER_PROPERTY_PORT = "port";
 	
+	@Inject
+	private NetworkServer server;
+	@Inject
+	private ServerMessageHandlerRegistry handlerRegistry;
+	
 	public static void main(String[] args) throws IOException {
+		new ServerMain();
+	}
+	
+	public ServerMain() throws IOException {
 		initializeCdiContainer();
 		initializeNetworkClasses();
+		
+		CdiContainer.injectTo(this);
 		
 		Properties config = loadOrCreateServerConfig();
 		
@@ -38,21 +58,28 @@ public class ServerMain {
 			log.debug("The port configuration '" + portProperty + "' could not be interpreted as a number. Using default port " + Network.DEFAULT_PORT);
 		}
 		
-		NetworkServer server = new NetworkServer();
 		server.start(port);
+		
+		registerServerHandlers();
 		
 		Thread.setDefaultUncaughtExceptionHandler(new ServerGlobalExceptionHandler());
 	}
 	
-	private static void initializeCdiContainer() throws IOException {
+	private void registerServerHandlers() {
+		handlerRegistry.addHandler(KeepAlive.class, new KeepAliveServerHandler());
+		handlerRegistry.addHandler(LoginDto.class, new LoginServerHandler());
+		handlerRegistry.addHandler(SignUpDto.class, new SignUpServerHandler());
+	}
+	
+	private void initializeCdiContainer() throws IOException {
 		CdiContainer.create("net.jfabricationgames.onnessium");
 	}
 	
-	private static void initializeNetworkClasses() {
+	private void initializeNetworkClasses() {
 		NetworkDtoRegistry.initializeNetworkClasses();
 	}
 	
-	private static Properties loadOrCreateServerConfig() throws IOException {
+	private Properties loadOrCreateServerConfig() throws IOException {
 		Properties config = new Properties();
 		try {
 			config.load(new FileInputStream(SERVER_PROPERTIES_PATH));
@@ -75,7 +102,7 @@ public class ServerMain {
 		return config;
 	}
 	
-	private static void createConfigFile(Properties config) throws IOException {
+	private void createConfigFile(Properties config) throws IOException {
 		File directory = new File(SERVER_PROPERTIES_DIRECTORY_PATH);
 		File properties = new File(SERVER_PROPERTIES_PATH);
 		

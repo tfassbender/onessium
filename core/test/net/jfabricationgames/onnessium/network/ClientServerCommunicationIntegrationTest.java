@@ -22,11 +22,11 @@ import com.esotericsoftware.kryonet.Client;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.client.NetworkClient;
-import net.jfabricationgames.onnessium.network.network.Network;
-import net.jfabricationgames.onnessium.network.network.exception.ConnectException;
-import net.jfabricationgames.onnessium.network.network.exception.ResponseNotReceivedException;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
+import net.jfabricationgames.onnessium.network.shared.Network;
+import net.jfabricationgames.onnessium.network.shared.exception.ConnectException;
+import net.jfabricationgames.onnessium.network.shared.exception.ResponseNotReceivedException;
 import net.jfabricationgames.onnessium.util.Pair;
 import net.jfabricationgames.onnessium.util.TestUtils;
 import net.jfabricationgames.onnessium.util.Wrapper;
@@ -81,7 +81,7 @@ public class ClientServerCommunicationIntegrationTest {
 	public void testSendMessageToServer() throws InterruptedException {
 		// received messages are store it in the messageWrapper
 		Wrapper<String> messageWrapper = Wrapper.empty();
-		handlerRegistry.registerHandler(SimpleMessage.class, (connection, message) -> messageWrapper.wrapped = message.message);
+		handlerRegistry.addHandler(SimpleMessage.class, (connection, message) -> messageWrapper.wrapped = message.message);
 		
 		String message = "simple message content";
 		client.send(new SimpleMessage().setMessage(message));
@@ -94,7 +94,7 @@ public class ClientServerCommunicationIntegrationTest {
 	@Test
 	public void testSendMessageToServerAndHandleResponse() throws InterruptedException {
 		// echo the simple message back to the client
-		handlerRegistry.registerHandler(SimpleMessage.class, (connection, message) -> connection.sendTCP(message));
+		handlerRegistry.addHandler(SimpleMessage.class, (connection, message) -> connection.sendTCP(message));
 		// received messages (on client side) are store it in the messageWrapper
 		Wrapper<String> messageWrapper = Wrapper.empty();
 		client.addMessageHandler(SimpleMessage.class, response -> messageWrapper.wrapped = response.message);
@@ -111,7 +111,7 @@ public class ClientServerCommunicationIntegrationTest {
 	@Test
 	public void testSendMessageToServerAndHandleSingleResponse() throws InterruptedException, ExecutionException, TimeoutException {
 		// echo the simple message back to the client
-		handlerRegistry.registerHandler(SimpleMessage.class, (connection, message) -> connection.sendTCP(message));
+		handlerRegistry.addHandler(SimpleMessage.class, (connection, message) -> connection.sendTCP(message));
 		
 		// received messages (on client side) are stored in the messageWrapper
 		Wrapper<String> messageWrapper = Wrapper.empty();
@@ -136,7 +136,7 @@ public class ClientServerCommunicationIntegrationTest {
 	@RepeatedTest(20)
 	public void testSendMessageToServerAndHandleSingleResponseWithoutServerAnswering() throws Exception {
 		// do not respond to the request on server side
-		handlerRegistry.registerHandler(SimpleMessage.class, (connection, message) -> {});
+		handlerRegistry.addHandler(SimpleMessage.class, (connection, message) -> {});
 		
 		// send a message with a response handler
 		CompletableFuture<Void> responseFuture = client.send(new SimpleMessage().setMessage("message content"), //
@@ -164,7 +164,7 @@ public class ClientServerCommunicationIntegrationTest {
 		kryoClient.getKryo().register(UnregisteredMessage.class);
 		
 		// echo the simple message back to the client
-		handlerRegistry.registerHandler(SimpleMessage.class, (connection, message) -> connection.sendTCP(message));
+		handlerRegistry.addHandler(SimpleMessage.class, (connection, message) -> connection.sendTCP(message));
 		// received messages (on client side) are store it in the messageWrapper
 		Wrapper<String> messageWrapper = Wrapper.empty();
 		client.addMessageHandler(SimpleMessage.class, response -> messageWrapper.wrapped = response.message);

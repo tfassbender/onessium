@@ -6,6 +6,7 @@ import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
+import net.jfabricationgames.onnessium.archunit.util.ArchUnitUtils;
 import net.jfabricationgames.onnessium.archunit.util.ArchUnitUtils.DoNotIncludeTests;
 import net.jfabricationgames.onnessium.archunit.util.PackageConstants;
 
@@ -16,27 +17,23 @@ public class NetworkDependencyRules {
 	 * Server code must not depend on libGdx packages.
 	 */
 	@ArchTest
-	private final ArchRule serverPackagesMustNotDependOnOtherPackagesOutsideNetwork = classes().that() //
+	private final ArchRule serverPackagesMustNotDependOnOtherPackagesOutsideNetworkExceptDto = classes().that() //
 			.resideInAPackage("..onnessium.network.server..") //
 			.should().onlyDependOnClassesThat() //
-			.resideInAnyPackage("..onnessium.network..", PackageConstants.LIBRARY_JAVA, PackageConstants.LIBRARY_JFG_CDI, //
-					PackageConstants.LIBRARY_KRYONET, PackageConstants.LIBRARY_SLF4J); //
+			.resideInAnyPackage(ArchUnitUtils.addAllLibraryPackages("..onnessium.network..", "..onnessium..dto.."));
 	
 	/**
 	 * Client code depends on libGdx code, but only for logging.
 	 */
 	@ArchTest
 	private final ArchRule clientPackagesMustNotDependOnOtherPackagesOutsideNetwork = classes().that() //
-			.resideInAPackage("..onnessium.network.server..") //
+			.resideInAPackage("..onnessium.network.client..") //
 			.should().onlyDependOnClassesThat() //
-			.resideInAnyPackage("..onnessium.network..", PackageConstants.LIBRARY_JAVA, PackageConstants.LIBRARY_JFG_CDI, //
-					PackageConstants.LIBRARY_KRYONET, PackageConstants.LIBRARY_SLF4J, //
-					"com.badlogic.gdx"); //
+			.resideInAnyPackage(ArchUnitUtils.addAllLibraryPackages("..onnessium.network..", "..onnessium..dto.."));    //
 	
 	@ArchTest
 	private final ArchRule networkPackagesMustNotDependOnOtherPackagesOutsideNetwork = classes().that() //
-			.resideInAPackage("..onnessium.network.network..") //
+			.resideInAPackage("..onnessium.network.shared..") //
 			.should().onlyDependOnClassesThat() //
-			.resideInAnyPackage("..onnessium.network..", PackageConstants.LIBRARY_JAVA, //
-					PackageConstants.LIBRARY_KRYO, PackageConstants.LIBRARY_KRYONET); //
+			.resideInAnyPackage(ArchUnitUtils.addAllLibraryPackages("..onnessium.network.."));
 }
