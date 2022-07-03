@@ -9,12 +9,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.lang.reflect.Field;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
 import com.esotericsoftware.kryonet.Client;
@@ -22,8 +22,9 @@ import com.esotericsoftware.kryonet.Client;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.client.NetworkClient;
-import net.jfabricationgames.onnessium.network.network.ConnectException;
 import net.jfabricationgames.onnessium.network.network.Network;
+import net.jfabricationgames.onnessium.network.network.exception.ConnectException;
+import net.jfabricationgames.onnessium.network.network.exception.ResponseNotReceivedException;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.util.Pair;
@@ -119,25 +120,31 @@ public class ClientServerCommunicationIntegrationTest {
 		
 		// send a message with a response handler, for a single response
 		CompletableFuture<Void> responseFuture = client.send(new SimpleMessage().setMessage(message1), //
-				response -> messageWrapper.wrapped = response.message, SimpleMessage.class);
+				response -> messageWrapper.wrapped = response.message, SimpleMessage.class, 100);
 		// the second message is not handled, because the handler was removed after handling the response
 		client.send(new SimpleMessage().setMessage(message2));
 		
-		responseFuture.get(5, TimeUnit.SECONDS);
+		responseFuture.get();
 		
 		assertEquals(message1, messageWrapper.wrapped);
 	}
 	
-	@Test
+	/**
+	 * Run this test repeatedly to check whether the futures will block the common thread pool 
+	 * (which usually causes only the first 7 tests to complete)
+	 */
+	@RepeatedTest(20)
 	public void testSendMessageToServerAndHandleSingleResponseWithoutServerAnswering() throws Exception {
 		// do not respond to the request on server side
 		handlerRegistry.registerHandler(SimpleMessage.class, (connection, message) -> {});
 		
 		// send a message with a response handler
 		CompletableFuture<Void> responseFuture = client.send(new SimpleMessage().setMessage("message content"), //
-				response -> {}, SimpleMessage.class);
+				response -> {}, SimpleMessage.class, 10);
 		
-		assertThrows(TimeoutException.class, () -> responseFuture.get(10, TimeUnit.MILLISECONDS));
+		ExecutionException executionException = assertThrows(ExecutionException.class, () -> responseFuture.get());
+		assertEquals(ResponseNotReceivedException.class, executionException.getCause().getClass());
+		assertTrue(executionException.getCause().getMessage().contains("No response was received"));
 	}
 	
 	@Test

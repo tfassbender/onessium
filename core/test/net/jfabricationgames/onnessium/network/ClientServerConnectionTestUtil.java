@@ -43,7 +43,7 @@ public class ClientServerConnectionTestUtil {
 	 * Reduce the connection timeout to 100 milliseconds, so the test doesn't take too long.
 	 */
 	public static void reduceConnectionTimeout(NetworkClient client) throws NoSuchFieldException, IllegalAccessException {
-		Field field = NetworkClient.class.getDeclaredField("connectionTimeout");
+		Field field = NetworkClient.class.getDeclaredField("connectionTimeoutInMilliseconds");
 		field.setAccessible(true);
 		field.set(client, 100);
 		field.setAccessible(false);

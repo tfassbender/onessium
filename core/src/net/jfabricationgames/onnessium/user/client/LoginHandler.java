@@ -2,8 +2,6 @@ package net.jfabricationgames.onnessium.user.client;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
@@ -14,8 +12,10 @@ import net.jfabricationgames.onnessium.util.Wrapper;
 
 public class LoginHandler {
 	
-	private static final String DEFAULT_LOGIN_FAILED_MESSAGE = "Login failed - Cannot connect to server";
-	private static final String DEFAULT_SIGNUP_FAILED_MESSAGE = "Sign up failed - Cannot connect to server";
+	private static final String DEFAULT_LOGIN_FAILED_MESSAGE_CANNOT_CONNECT = "Login failed - Cannot connect to server";
+	private static final String DEFAULT_LOGIN_FAILED_MESSAGE_SERVER_NOT_RESPONDING = "Login failed - The server is not responding";
+	private static final String DEFAULT_SIGNUP_FAILED_MESSAGE_CANNOT_CONNECT = "Sign up failed - Cannot connect to server";
+	private static final String DEFAULT_SIGNUP_FAILED_MESSAGE_SERVER_NOT_RESPONDING = "Sign up failed - The server is not responding";
 	
 	@Inject
 	private NetworkClient networkClient;
@@ -35,7 +35,7 @@ public class LoginHandler {
 			networkClient.connect(host, port) //
 					.exceptionally(t -> {
 						// the connection could not be established
-						loginException = new LoginException(DEFAULT_LOGIN_FAILED_MESSAGE, t);
+						loginException = new LoginException(DEFAULT_LOGIN_FAILED_MESSAGE_CANNOT_CONNECT, t);
 						return null;
 					}) //
 					.thenAccept(v -> {
@@ -47,20 +47,22 @@ public class LoginHandler {
 							else {
 								onComplete.run();
 							}
-						}, LoginDto.class);
+						}, LoginDto.class, responseWaitingTimeInMilliseconds);
 					}) //
 					.get();
 		}
 		catch (InterruptedException | ExecutionException e) {
-			loginException = new LoginException(DEFAULT_LOGIN_FAILED_MESSAGE, e);
+			loginException = new LoginException(DEFAULT_LOGIN_FAILED_MESSAGE_CANNOT_CONNECT, e);
 		}
 		
-		try {
-			// wait for the response of the server (for a maximum of usually 5 seconds, before the login is assumed to be not successful)
-			loginResponseFuture.wrapped.get(responseWaitingTimeInMilliseconds, TimeUnit.MILLISECONDS);
-		}
-		catch (InterruptedException | ExecutionException | TimeoutException e) {
-			loginException = new LoginException(DEFAULT_LOGIN_FAILED_MESSAGE, e);
+		if (loginException == null) {
+			try {
+				// wait for the response of the server (for a maximum of usually 5 seconds, before the login is assumed to be not successful)
+				loginResponseFuture.wrapped.get();
+			}
+			catch (InterruptedException | ExecutionException e) {
+				loginException = new LoginException(DEFAULT_LOGIN_FAILED_MESSAGE_SERVER_NOT_RESPONDING, e);
+			}
 		}
 		
 		if (loginException != null) {
@@ -77,7 +79,7 @@ public class LoginHandler {
 			networkClient.connect(host, port) //
 					.exceptionally(t -> {
 						// the connection could not be established
-						loginException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE, t);
+						loginException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_CANNOT_CONNECT, t);
 						return null;
 					}) //
 					.thenAccept(v -> {
@@ -89,20 +91,22 @@ public class LoginHandler {
 							else {
 								onComplete.run();
 							}
-						}, SignUpDto.class);
+						}, SignUpDto.class, responseWaitingTimeInMilliseconds);
 					}) //
 					.get();
 		}
 		catch (InterruptedException | ExecutionException e) {
-			loginException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE, e);
+			loginException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_CANNOT_CONNECT, e);
 		}
 		
-		try {
-			// wait for the response of the server (for a maximum of usually 5 seconds, before the sign up is assumed to be not successful)
-			signupResponseFuture.wrapped.get(responseWaitingTimeInMilliseconds, TimeUnit.MILLISECONDS);
-		}
-		catch (InterruptedException | ExecutionException | TimeoutException e) {
-			loginException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE, e);
+		if (loginException == null) {
+			try {
+				// wait for the response of the server (for a maximum of usually 5 seconds, before the sign up is assumed to be not successful)
+				signupResponseFuture.wrapped.get();
+			}
+			catch (InterruptedException | ExecutionException e) {
+				loginException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_SERVER_NOT_RESPONDING, e);
+			}
 		}
 		
 		if (loginException != null) {

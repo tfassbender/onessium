@@ -7,13 +7,16 @@ import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
 
 import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
-import net.jfabricationgames.onnessium.network.network.ConnectException;
 import net.jfabricationgames.onnessium.network.network.Network;
+import net.jfabricationgames.onnessium.network.network.exception.ConnectException;
+import net.jfabricationgames.onnessium.network.network.exception.ResponseNotReceivedException;
 
 @ApplicationScoped
 public class NetworkClient {
 	
-	private int connectionTimeout = 5000;
+	public static final int DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS = 5000;
+	
+	private int connectionTimeoutInMilliseconds = 5000;
 	
 	private Client client;
 	private NetworkClientListener listener;
@@ -47,7 +50,7 @@ public class NetworkClient {
 	private void connectToServer(String host, int port) {
 		try {
 			Gdx.app.log(getClass().getSimpleName(), "Connecting to server at '" + host + "' on port " + port);
-			client.connect(connectionTimeout, host, port);
+			client.connect(connectionTimeoutInMilliseconds, host, port);
 			Gdx.app.log(getClass().getSimpleName(), "Successfully connected to server");
 		}
 		catch (IOException e) {
@@ -91,7 +94,14 @@ public class NetworkClient {
 	 * respond (maybe because of an exception or for any other cause).
 	 */
 	public <T> CompletableFuture<Void> send(Object object, ClientMessageHandler<T> responseHandler, Class<T> responseType) {
-		CompletableFuture<Void> waitingFuture = createWaitingCompletableFuture();
+		return send(object, responseHandler, responseType, DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS);
+	}
+	
+	/**
+	 * See {@link NetworkClient#send(Object, ClientMessageHandler, Class)}
+	 */
+	public <T> CompletableFuture<Void> send(Object object, ClientMessageHandler<T> responseHandler, Class<T> responseType, long maximumWaitingTimeInMilliseconds) {
+		CompletableFuture<Void> waitingFuture = createWaitingCompletableFuture(maximumWaitingTimeInMilliseconds);
 		addMessageHandler(responseType, new SelfRemovingMessageHandler<>(responseHandler, responseType, waitingFuture));
 		client.sendTCP(object);
 		
@@ -99,19 +109,26 @@ public class NetworkClient {
 	}
 	
 	/**
-	 * Create a CompletableFuture that just waits, till the CompeltableFuture.complete method is called on it.
+	 * Create a CompletableFuture that just waits, till the CompeltableFuture.complete method is called on it, or till the 
+	 * configured time amount for an answer is over.
 	 */
-	private CompletableFuture<Void> createWaitingCompletableFuture() {
+	private CompletableFuture<Void> createWaitingCompletableFuture(long maximumWaitingTimeInMilliseconds) {
 		return CompletableFuture.runAsync(() -> {
 			try {
-				synchronized (this) {
-					wait();
-				}
+				Thread.sleep(maximumWaitingTimeInMilliseconds);
 			}
 			catch (InterruptedException e) {
 				// should never happen
-				throw new IllegalStateException(e);
+				throw new ResponseNotReceivedException("The waiting for the response was interrupted. The maximum waiting time was " + //
+						maximumWaitingTimeInMilliseconds + " ms", e);
 			}
+			
+			/*
+			 * if the response was received in the meantime, the CompletableFuture would have already been handled, 
+			 * so we just throw the exception here, to end the CompletableFuture exceptionally
+			 */
+			throw new ResponseNotReceivedException("No response was received in the waiting time of " + //
+					maximumWaitingTimeInMilliseconds + " ms");
 		});
 	}
 	

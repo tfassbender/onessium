@@ -98,18 +98,22 @@ public class LoginHandlerIntegrationTest {
 		// the server is already started, so shut it down
 		server.stop();
 		
-		handlerRegistry.registerHandler(SignUpDto.class, (connection, dto) -> {
-			dto.setSuccessful(false); // respond that the sign up was NOT successful
-			connection.sendTCP(dto);
-		});
-		
 		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.signUp("Arthur Dent", "42", //
 				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //
 				() -> {}));
 		assertEquals("Sign up failed - Cannot connect to server", loginException.getMessage());
 	}
 	
-	//TODO test what happens when the server doesn't respond in a given time
+	@Test
+	public void testSignUpNotSuccessfulBecauseServerDoesNotRespond() throws LoginException {
+		// do not respond to the login request
+		handlerRegistry.registerHandler(SignUpDto.class, (connection, dto) -> {});
+		
+		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.signUp("Arthur Dent", "42", //
+				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //
+				() -> {}));
+		assertEquals("Sign up failed - The server is not responding", loginException.getMessage());
+	}
 	
 	@Test
 	public void testLoginSuccessful() throws LoginException {
@@ -143,16 +147,20 @@ public class LoginHandlerIntegrationTest {
 		// the server is already started, so shut it down
 		server.stop();
 		
-		handlerRegistry.registerHandler(LoginDto.class, (connection, dto) -> {
-			dto.setSuccessful(false); // respond that the login was NOT successful
-			connection.sendTCP(dto);
-		});
-		
 		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.login("Arthur Dent", "42", //
 				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //
 				() -> {}));
 		assertEquals("Login failed - Cannot connect to server", loginException.getMessage());
 	}
 	
-	//TODO test what happens when the server doesn't respond in a given time
+	@Test
+	public void testLoginNotSuccessfulBecauseServerDoesNotRespond() throws LoginException {
+		// do not respond to the login request
+		handlerRegistry.registerHandler(LoginDto.class, (connection, dto) -> {});
+		
+		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.login("Arthur Dent", "42", //
+				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //
+				() -> {}));
+		assertEquals("Login failed - The server is not responding", loginException.getMessage());
+	}
 }
