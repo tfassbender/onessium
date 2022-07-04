@@ -17,16 +17,17 @@ import net.jfabricationgames.onnessium.util.TestUtils;
 public class LastUsedClientSettingsTest {
 	
 	public static final String TEMPORARY_SETTINGS_FILE_PATH = LastUsedClientSettings.LAST_USED_CLIENT_SETTINGS_DIRECTORY_PATH + "/test_settings.properties";
+	public static final String NOT_EXISTING_SETTINGS_FILE_PATH = LastUsedClientSettings.LAST_USED_CLIENT_SETTINGS_DIRECTORY_PATH + "/not_existing_settings.properties";
 	
 	@BeforeAll
-	public static void moveExistingConfigFile() {
-		LastUsedClientSettings.setSettingsPropertyPath(TEMPORARY_SETTINGS_FILE_PATH);
+	public static void moveExistingConfigFile() throws NoSuchFieldException, IllegalAccessException {
+		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", TEMPORARY_SETTINGS_FILE_PATH);
 		TestUtils.mockGdxApplication();
 	}
 	
 	@AfterAll
-	public static void restoreExistingConfigFile() {
-		LastUsedClientSettings.resetSettingsPropertyPath();
+	public static void restoreExistingConfigFile() throws NoSuchFieldException, IllegalAccessException {
+		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", LastUsedClientSettings.LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH);
 		new File(TEMPORARY_SETTINGS_FILE_PATH).delete();
 	}
 	
@@ -34,13 +35,18 @@ public class LastUsedClientSettingsTest {
 	 * Must be run as first, or in debug mode to succeed... probably because some files cannot be deleted
 	 */
 	@Test
-	public void test01_LoadDefaultProperties() {
-		File settings = new File(TEMPORARY_SETTINGS_FILE_PATH);
-		if (settings.exists()) {
-			settings.delete();
-		}
+	public void test01_LoadDefaultProperties() throws NoSuchFieldException, IllegalAccessException {
+		// change the path to a not existing path, to test loading the default settings (because deleting the existing file may fail)
+		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", NOT_EXISTING_SETTINGS_FILE_PATH);
 		
-		LastUsedClientSettings defaultSettings = LastUsedClientSettings.load();
+		LastUsedClientSettings defaultSettings = null;
+		try {
+			defaultSettings = LastUsedClientSettings.load();
+		}
+		finally {
+			// change the path back to the usual test path
+			TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", TEMPORARY_SETTINGS_FILE_PATH);
+		}
 		
 		assertEquals("Arthur Dent", defaultSettings.getUsername());
 		assertEquals("", defaultSettings.getPassword());

@@ -1,6 +1,7 @@
 package net.jfabricationgames.onnessium.util;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
@@ -29,6 +30,22 @@ public class TestUtils {
 		catch (CdiException e) {
 			// the CDI container might have already been initialised
 		}
+	}
+	
+	public static void setFieldPerReflection(Class<?> clazz, Object instance, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
+		Field field = clazz.getDeclaredField(fieldName);
+		boolean accessible = field.isAccessible();
+		field.setAccessible(true);
+		field.set(instance, value);
+		field.setAccessible(accessible);
+	}
+	
+	public static void setStaticFieldPerReflection(Class<?> clazz, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
+		Field field = clazz.getDeclaredField(fieldName);
+		boolean accessible = field.isAccessible();
+		field.setAccessible(true);
+		field.set(null, value);
+		field.setAccessible(accessible);
 	}
 	
 	/**

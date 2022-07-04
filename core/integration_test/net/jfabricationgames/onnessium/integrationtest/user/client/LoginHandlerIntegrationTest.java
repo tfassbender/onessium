@@ -1,4 +1,4 @@
-package net.jfabricationgames.onnessium.user.client;
+package net.jfabricationgames.onnessium.integrationtest.user.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,13 +13,16 @@ import org.junit.jupiter.api.Test;
 
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
-import net.jfabricationgames.onnessium.network.ClientServerConnectionTestUtil;
+import net.jfabricationgames.onnessium.integrationtest.network.ClientServerConnectionTestUtil;
 import net.jfabricationgames.onnessium.network.client.NetworkClient;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.shared.Network;
+import net.jfabricationgames.onnessium.user.client.LastUsedClientSettings;
+import net.jfabricationgames.onnessium.user.client.LastUsedClientSettingsTest;
+import net.jfabricationgames.onnessium.user.client.LoginHandler;
 import net.jfabricationgames.onnessium.user.client.LoginHandler.LoginException;
 import net.jfabricationgames.onnessium.util.TestUtils;
 import net.jfabricationgames.onnessium.util.Wrapper;
@@ -39,7 +42,7 @@ public class LoginHandlerIntegrationTest {
 		TestUtils.mockGdxApplication();
 		TestUtils.createCdiContainer();
 		
-		LastUsedClientSettings.setSettingsPropertyPath(LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH);
+		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH);
 		
 		Network.registerClass(LoginDto.class);
 		Network.registerClass(SignUpDto.class);
@@ -60,20 +63,20 @@ public class LoginHandlerIntegrationTest {
 		server = new NetworkServer();
 		server.start(ClientServerConnectionTestUtil.PORT);
 		
-		loginHandler.setResponseWaitingTimeInMilliseconds(10);
+		TestUtils.setFieldPerReflection(LoginHandler.class, loginHandler, "responseWaitingTimeInMilliseconds", 10);
 	}
 	
 	@AfterEach
-	public void disconnect() {
+	public void disconnect() throws NoSuchFieldException, IllegalAccessException {
 		client.disconnect();
 		server.stop();
 		
-		loginHandler.resetResponseWaitingTimeInMilliseconds();
+		TestUtils.setFieldPerReflection(LoginHandler.class, loginHandler, "responseWaitingTimeInMilliseconds", 5000);
 	}
 	
 	@AfterAll
-	public static void restoreExistingConfigFile() {
-		LastUsedClientSettings.resetSettingsPropertyPath();
+	public static void restoreExistingConfigFile() throws NoSuchFieldException, IllegalAccessException {
+		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", LastUsedClientSettings.LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH);
 		new File(LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH).delete();
 	}
 	

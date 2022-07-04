@@ -116,20 +116,6 @@ public class LoginHandler {
 		LastUsedClientSettings.store(username, password, host, port);
 	}
 	
-	/**
-	 * Use in tests to not wait to long for the response.
-	 */
-	protected void setResponseWaitingTimeInMilliseconds(long responseWaitingTimeInMilliseconds) {
-		this.responseWaitingTimeInMilliseconds = responseWaitingTimeInMilliseconds;
-	}
-	
-	/**
-	 * Use after tests to reset the response waiting time.
-	 */
-	protected void resetResponseWaitingTimeInMilliseconds() {
-		this.responseWaitingTimeInMilliseconds = 5000;
-	}
-	
 	public class LoginException extends Exception {
 		
 		private static final long serialVersionUID = 1L;

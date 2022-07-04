@@ -1,4 +1,4 @@
-package net.jfabricationgames.onnessium.network;
+package net.jfabricationgames.onnessium.integrationtest.network;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

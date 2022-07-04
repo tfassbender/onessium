@@ -37,7 +37,7 @@ public class ArchUnitUtils {
 	
 	public static class DoNotIncludeTests implements ImportOption {
 		
-		private static final String TEST_PATH_IDE = ".*/bin/test/.*";
+		private static final String TEST_PATH_IDE = ".*/bin/[^/]*test/.*";
 		private static final String TEST_PATH_GRADLE = ".*/build/classes/java/test/.*";
 		
 		@Override

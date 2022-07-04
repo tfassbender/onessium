@@ -17,7 +17,7 @@ public class LastUsedClientSettings {
 	public static final String LAST_USED_CLIENT_SETTINGS_DIRECTORY_PATH = System.getProperty("user.home") + "/.onnessium/config/";
 	public static final String LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH = LAST_USED_CLIENT_SETTINGS_DIRECTORY_PATH + "last_used_client_settings.properties";
 	
-	private static String SETTINGS_PROPERTY_PATH = LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH;
+	private static String SETTINGS_PROPERTY_PATH = LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH; // can be changed in tests
 	
 	private static final String PROPERTY_USERNAME = "username";
 	private static final String PROPERTY_ENCRYPTED_PASSWORD = "encrypted_password";
@@ -141,19 +141,5 @@ public class LastUsedClientSettings {
 	
 	public int getPort() {
 		return port;
-	}
-	
-	/**
-	 * Use for testing, to not overwrite the existing settings.
-	 */
-	protected static void setSettingsPropertyPath(String path) {
-		SETTINGS_PROPERTY_PATH = path;
-	}
-	
-	/**
-	 * Use after testing, to not overwrite the existing settings.
-	 */
-	protected static void resetSettingsPropertyPath() {
-		SETTINGS_PROPERTY_PATH = LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH;
 	}
 }

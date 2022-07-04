@@ -1,10 +1,9 @@
-package net.jfabricationgames.onnessium.network;
-
-import java.lang.reflect.Field;
+package net.jfabricationgames.onnessium.integrationtest.network;
 
 import net.jfabricationgames.onnessium.network.client.NetworkClient;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 import net.jfabricationgames.onnessium.util.Pair;
+import net.jfabricationgames.onnessium.util.TestUtils;
 
 public class ClientServerConnectionTestUtil {
 	
@@ -43,9 +42,6 @@ public class ClientServerConnectionTestUtil {
 	 * Reduce the connection timeout to 100 milliseconds, so the test doesn't take too long.
 	 */
 	public static void reduceConnectionTimeout(NetworkClient client) throws NoSuchFieldException, IllegalAccessException {
-		Field field = NetworkClient.class.getDeclaredField("connectionTimeoutInMilliseconds");
-		field.setAccessible(true);
-		field.set(client, 100);
-		field.setAccessible(false);
+		TestUtils.setFieldPerReflection(NetworkClient.class, client, "connectionTimeoutInMilliseconds", 100);
 	}
 }
