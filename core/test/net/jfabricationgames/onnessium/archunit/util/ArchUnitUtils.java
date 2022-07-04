@@ -21,7 +21,7 @@ public class ArchUnitUtils {
 	}
 	
 	public static String[] addAllLibraryPackages(String... packages) {
-		String[] allPackages = new String[packages.length + 6];
+		String[] allPackages = new String[packages.length + 7];
 		System.arraycopy(packages, 0, allPackages, 0, packages.length);
 		
 		allPackages[packages.length] = PackageConstants.LIBRARY_JAVA;
@@ -30,6 +30,7 @@ public class ArchUnitUtils {
 		allPackages[packages.length + 3] = PackageConstants.LIBRARY_SLF4J;
 		allPackages[packages.length + 4] = PackageConstants.LIBRARY_KRYO;
 		allPackages[packages.length + 5] = PackageConstants.LIBRARY_KRYONET;
+		allPackages[packages.length + 6] = ""; // empty package is used to allow arrays of primitive types
 		
 		return allPackages;
 	}
