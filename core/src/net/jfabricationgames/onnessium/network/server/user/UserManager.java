@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
 import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
 import net.jfabricationgames.onnessium.network.shared.PasswordEncryptor;
@@ -38,7 +39,9 @@ public class UserManager {
 	 */
 	protected UserManager(String path) {
 		this.userFile = path;
-		json = new Json();
+		json = new Json(OutputType.json); // write normal JSON with all quotes
+		json.setUsePrototypes(false); // write all fields (do not ignore default values)
+		json.setTypeName(null); // do not include class names
 		loadUsers();
 	}
 	
