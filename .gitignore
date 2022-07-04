@@ -117,3 +117,7 @@ Thumbs.db
 ## Sonargraph
 
 /core/onnessium.sonargraph
+
+## test and config classes
+
+/core/config
