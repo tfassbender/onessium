@@ -16,8 +16,6 @@ public class NetworkClient {
 	
 	public static final int DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS = 5000;
 	
-	private int connectionTimeoutInMilliseconds = 5000; // can be changed in tests (via reflection)
-	
 	private Client client;
 	private NetworkClientListener listener;
 	
@@ -50,7 +48,7 @@ public class NetworkClient {
 	private void connectToServer(String host, int port) {
 		try {
 			Gdx.app.log(getClass().getSimpleName(), "Connecting to server at '" + host + "' on port " + port);
-			client.connect(connectionTimeoutInMilliseconds, host, port);
+			client.connect(DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS, host, port);
 			Gdx.app.log(getClass().getSimpleName(), "Successfully connected to server");
 		}
 		catch (IOException e) {

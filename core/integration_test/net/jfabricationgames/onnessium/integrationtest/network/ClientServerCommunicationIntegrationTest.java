@@ -184,7 +184,7 @@ public class ClientServerCommunicationIntegrationTest {
 		
 		client = new NetworkClient();
 		
-		ClientServerConnectionTestUtil.reduceConnectionTimeout(client);
+		ClientServerConnectionTestUtil.reduceConnectionTimeout();
 		
 		clientConnectException = null;
 		

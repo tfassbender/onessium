@@ -17,8 +17,6 @@ public class LastUsedClientSettings {
 	public static final String LAST_USED_CLIENT_SETTINGS_DIRECTORY_PATH = System.getProperty("user.home") + "/.onnessium/config/";
 	public static final String LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH = LAST_USED_CLIENT_SETTINGS_DIRECTORY_PATH + "last_used_client_settings.properties";
 	
-	private static String SETTINGS_PROPERTY_PATH = LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH; // can be changed in tests
-	
 	private static final String PROPERTY_USERNAME = "username";
 	private static final String PROPERTY_ENCRYPTED_PASSWORD = "encrypted_password";
 	private static final String PROPERTY_HOST = "host";
@@ -68,7 +66,7 @@ public class LastUsedClientSettings {
 	private static Properties loadProperties() {
 		try {
 			Properties config = new Properties();
-			config.load(new FileInputStream(SETTINGS_PROPERTY_PATH));
+			config.load(new FileInputStream(LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH));
 			Gdx.app.log(LastUsedClientSettings.class.getSimpleName(), " *********************************************");
 			Gdx.app.log(LastUsedClientSettings.class.getSimpleName(), " *** Client properties loaded successfully:");
 			config.forEach((property, value) -> Gdx.app.log(LastUsedClientSettings.class.getSimpleName(), " *** " + property + ": " + value));
@@ -88,7 +86,7 @@ public class LastUsedClientSettings {
 	
 	private static void createConfigFile(Properties config) {
 		File directory = new File(LAST_USED_CLIENT_SETTINGS_DIRECTORY_PATH);
-		File properties = new File(SETTINGS_PROPERTY_PATH);
+		File properties = new File(LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH);
 		
 		if (!directory.exists()) {
 			directory.mkdirs();
@@ -113,7 +111,7 @@ public class LastUsedClientSettings {
 		config.setProperty(PROPERTY_HOST, host);
 		config.setProperty(PROPERTY_PORT, Integer.toString(port));
 		
-		File propertiesFile = new File(SETTINGS_PROPERTY_PATH);
+		File propertiesFile = new File(LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH);
 		if (!propertiesFile.exists()) {
 			createConfigFile(config);
 		}

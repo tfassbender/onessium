@@ -2,6 +2,7 @@ package net.jfabricationgames.onnessium.util;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.ApplicationListener;
@@ -40,12 +41,27 @@ public class TestUtils {
 		field.setAccessible(accessible);
 	}
 	
-	public static void setStaticFieldPerReflection(Class<?> clazz, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
+	// see: https://stackoverflow.com/a/3301720/8178842
+	public static void setStaticFinalFieldPerReflection(Class<?> clazz, String fieldName, Object value) throws NoSuchFieldException, IllegalAccessException {
 		Field field = clazz.getDeclaredField(fieldName);
-		boolean accessible = field.isAccessible();
+		
+		// ignore that the field may be private
+		boolean isAccessible = field.isAccessible();
 		field.setAccessible(true);
+		
+		// ignore that the field may be final
+		Field modifiersField = Field.class.getDeclaredField("modifiers");
+		modifiersField.setAccessible(true);
+		boolean isFinal = (modifiersField.getModifiers() & Modifier.FINAL) != 0;
+		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+		modifiersField.setAccessible(false);
+		
 		field.set(null, value);
-		field.setAccessible(accessible);
+		
+		field.setAccessible(isAccessible);
+		if (isFinal) {
+			field.setInt(field, field.getModifiers() & Modifier.FINAL);
+		}
 	}
 	
 	/**

@@ -41,7 +41,7 @@ public class ClientServerConnectionTestUtil {
 	/**
 	 * Reduce the connection timeout to 100 milliseconds, so the test doesn't take too long.
 	 */
-	public static void reduceConnectionTimeout(NetworkClient client) throws NoSuchFieldException, IllegalAccessException {
-		TestUtils.setFieldPerReflection(NetworkClient.class, client, "connectionTimeoutInMilliseconds", 100);
+	public static void reduceConnectionTimeout() throws NoSuchFieldException, IllegalAccessException {
+		TestUtils.setStaticFinalFieldPerReflection(NetworkClient.class, "DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS", 100);
 	}
 }

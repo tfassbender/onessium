@@ -21,13 +21,13 @@ public class LastUsedClientSettingsTest {
 	
 	@BeforeAll
 	public static void moveExistingConfigFile() throws NoSuchFieldException, IllegalAccessException {
-		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", TEMPORARY_SETTINGS_FILE_PATH);
+		LastUsedClientSettingsTestUtil.setSettingsPropertyPathTo(TEMPORARY_SETTINGS_FILE_PATH);
 		TestUtils.mockGdxApplication();
 	}
 	
 	@AfterAll
 	public static void restoreExistingConfigFile() throws NoSuchFieldException, IllegalAccessException {
-		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", LastUsedClientSettings.LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH);
+		LastUsedClientSettingsTestUtil.resetSettingsPropertyPath();
 		new File(TEMPORARY_SETTINGS_FILE_PATH).delete();
 	}
 	
@@ -37,7 +37,7 @@ public class LastUsedClientSettingsTest {
 	@Test
 	public void test01_LoadDefaultProperties() throws NoSuchFieldException, IllegalAccessException {
 		// change the path to a not existing path, to test loading the default settings (because deleting the existing file may fail)
-		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", NOT_EXISTING_SETTINGS_FILE_PATH);
+		LastUsedClientSettingsTestUtil.setSettingsPropertyPathTo(NOT_EXISTING_SETTINGS_FILE_PATH);
 		
 		LastUsedClientSettings defaultSettings = null;
 		try {
@@ -45,7 +45,7 @@ public class LastUsedClientSettingsTest {
 		}
 		finally {
 			// change the path back to the usual test path
-			TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", TEMPORARY_SETTINGS_FILE_PATH);
+			LastUsedClientSettingsTestUtil.setSettingsPropertyPathTo(TEMPORARY_SETTINGS_FILE_PATH);
 		}
 		
 		assertEquals("Arthur Dent", defaultSettings.getUsername());

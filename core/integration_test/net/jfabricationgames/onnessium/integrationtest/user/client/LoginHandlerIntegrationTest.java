@@ -20,8 +20,8 @@ import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.server.NetworkServer;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.shared.Network;
-import net.jfabricationgames.onnessium.user.client.LastUsedClientSettings;
 import net.jfabricationgames.onnessium.user.client.LastUsedClientSettingsTest;
+import net.jfabricationgames.onnessium.user.client.LastUsedClientSettingsTestUtil;
 import net.jfabricationgames.onnessium.user.client.LoginHandler;
 import net.jfabricationgames.onnessium.user.client.LoginHandler.LoginException;
 import net.jfabricationgames.onnessium.util.TestUtils;
@@ -42,7 +42,7 @@ public class LoginHandlerIntegrationTest {
 		TestUtils.mockGdxApplication();
 		TestUtils.createCdiContainer();
 		
-		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH);
+		LastUsedClientSettingsTestUtil.setSettingsPropertyPathTo(LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH);
 		
 		Network.registerClass(LoginDto.class);
 		Network.registerClass(SignUpDto.class);
@@ -54,7 +54,7 @@ public class LoginHandlerIntegrationTest {
 		
 		client = new NetworkClient();
 		
-		ClientServerConnectionTestUtil.reduceConnectionTimeout(client);
+		ClientServerConnectionTestUtil.reduceConnectionTimeout();
 		
 		handlerRegistry.removeAllHandlers();
 		client.removeAllMessageHandlersForType(LoginDto.class);
@@ -76,7 +76,7 @@ public class LoginHandlerIntegrationTest {
 	
 	@AfterAll
 	public static void restoreExistingConfigFile() throws NoSuchFieldException, IllegalAccessException {
-		TestUtils.setStaticFieldPerReflection(LastUsedClientSettings.class, "SETTINGS_PROPERTY_PATH", LastUsedClientSettings.LAST_USED_CLIENT_SETTINGS_PROPERTY_PATH);
+		LastUsedClientSettingsTestUtil.resetSettingsPropertyPath();
 		new File(LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH).delete();
 	}
 	
