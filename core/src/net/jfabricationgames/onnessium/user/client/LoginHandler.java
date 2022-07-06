@@ -21,6 +21,7 @@ public class LoginHandler {
 	private NetworkClient networkClient;
 	
 	private LoginException loginException;
+	private LoginException signUpException;
 	
 	private long responseWaitingTimeInMilliseconds = 5000;
 	
@@ -30,6 +31,8 @@ public class LoginHandler {
 	
 	public void login(String username, String password, String host, int port, Runnable onComplete) throws LoginException {
 		Wrapper<CompletableFuture<Void>> loginResponseFuture = Wrapper.empty();
+		
+		loginException = null;
 		
 		try {
 			networkClient.connect(host, port) //
@@ -75,18 +78,20 @@ public class LoginHandler {
 	public void signUp(String username, String password, String host, int port, Runnable onComplete) throws LoginException {
 		Wrapper<CompletableFuture<Void>> signupResponseFuture = Wrapper.empty();
 		
+		signUpException = null;
+		
 		try {
 			networkClient.connect(host, port) //
 					.exceptionally(t -> {
 						// the connection could not be established
-						loginException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_CANNOT_CONNECT, t);
+						signUpException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_CANNOT_CONNECT, t);
 						return null;
 					}) //
 					.thenAccept(v -> {
 						// the connection was successfully established, so send a sign up request
 						signupResponseFuture.wrapped = networkClient.send(new SignUpDto().setUsername(username).setPassword(password), response -> {
 							if (!response.successful) {
-								loginException = new LoginException(response.errorMessage);
+								signUpException = new LoginException(response.errorMessage);
 							}
 							else {
 								onComplete.run();
@@ -96,21 +101,21 @@ public class LoginHandler {
 					.get();
 		}
 		catch (InterruptedException | ExecutionException e) {
-			loginException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_CANNOT_CONNECT, e);
+			signUpException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_CANNOT_CONNECT, e);
 		}
 		
-		if (loginException == null) {
+		if (signUpException == null) {
 			try {
 				// wait for the response of the server (for a maximum of usually 5 seconds, before the sign up is assumed to be not successful)
 				signupResponseFuture.wrapped.get();
 			}
 			catch (InterruptedException | ExecutionException e) {
-				loginException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_SERVER_NOT_RESPONDING, e);
+				signUpException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_SERVER_NOT_RESPONDING, e);
 			}
 		}
 		
-		if (loginException != null) {
-			throw loginException;
+		if (signUpException != null) {
+			throw signUpException;
 		}
 		
 		LastUsedClientSettings.store(username, password, host, port);

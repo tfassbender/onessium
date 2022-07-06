@@ -24,6 +24,10 @@ public class SignUpServerHandler implements ServerMessageHandler<SignUpDto> {
 			message.successful = false;
 			message.errorMessage = "A user with the name \"" + message.username + "\" is already registered on this server.";
 		}
+		else if (message.password == null || message.password.length() < 5) {
+			message.successful = false;
+			message.errorMessage = "The password must be at least 5 characters long.";
+		}
 		else {
 			userManager.addUser(new UserAccount()//
 					.setUsername(message.username)//

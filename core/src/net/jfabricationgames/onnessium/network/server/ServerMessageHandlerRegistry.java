@@ -33,7 +33,13 @@ public class ServerMessageHandlerRegistry {
 	}
 	
 	private <T> void handleMessage(NetworkConnection connection, Object message, Class<T> messageType) {
-		handlerForType(messageType).ifPresent(handler -> handler.handleMessage(connection, messageType.cast(message)));
+		Optional<ServerMessageHandler<T>> handler = handlerForType(messageType);
+		if (handler.isPresent()) {
+			handler.get().handleMessage(connection, messageType.cast(message));
+		}
+		else {
+			log.warn("No handler is registered for the received message with type '{}': {}", messageType.getName(), message);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
