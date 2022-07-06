@@ -14,5 +14,9 @@ public class Wrapper<T> {
 		return wrapper;
 	}
 	
+	public boolean isEmpty() {
+		return wrapped == null;
+	}
+	
 	private Wrapper() {}
 }

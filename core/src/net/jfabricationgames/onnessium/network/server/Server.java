@@ -5,9 +5,7 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.Server;
 
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
@@ -15,42 +13,42 @@ import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
 import net.jfabricationgames.onnessium.network.shared.Network;
 
 @ApplicationScoped
-public class NetworkServer {
+public class Server {
 	
 	// the server is not started with the LibGDX Framework, so it can use a logger
-	private static final Logger log = LoggerFactory.getLogger(NetworkServer.class);
+	private static final Logger log = LoggerFactory.getLogger(Server.class);
 	
 	@Inject
 	private ServerMessageHandlerRegistry serverMessageHandlerRegistry;
 	
-	private Server server;
+	private com.esotericsoftware.kryonet.Server server;
 	
-	public NetworkServer() {
+	public Server() {
 		CdiContainer.injectTo(this);
 		
-		server = new Server() {
+		server = new com.esotericsoftware.kryonet.Server() {
 			@Override
-			protected Connection newConnection() {
-				return new NetworkConnection();
+			protected com.esotericsoftware.kryonet.Connection newConnection() {
+				return new Connection();
 			}
 		};
 		
 		server.addListener(new Listener() {
 			@Override
-			public void received(Connection connection, Object object) {
-				// all connections are ChatConnections, because the method in the server is overwritten
-				NetworkConnection networkConnection = (NetworkConnection) connection;
-				serverMessageHandlerRegistry.handleMessage(networkConnection, object);
+			public void received(com.esotericsoftware.kryonet.Connection con, Object object) {
+				// all connections are our connection type, because the method in the server is overwritten
+				Connection connection = (Connection) con;
+				serverMessageHandlerRegistry.handleMessage(connection, object);
 			}
 			
 			@Override
-			public void disconnected(Connection connection) {
+			public void disconnected(com.esotericsoftware.kryonet.Connection connection) {
 				// NetworkConnection chatConnection = (NetworkConnection) connection;
 				//TODO logout
 			}
 		});
 		
-		Network.registerDtoClasses(server);
+		Network.registerDtoClassesInEndpoint(server);
 	}
 	
 	public void start(int port) throws IOException {
@@ -63,5 +61,15 @@ public class NetworkServer {
 	public void stop() {
 		log.info("Stopping \"Onnessium\" server.");
 		server.stop();
+	}
+	
+	/**
+	 * Send a message object to all clients that are connected.
+	 * 
+	 * NOTE: The type of the message that is sent has to be registered. See {@link Network#registerDtoClass(Class)} 
+	 * and NetworkDtoRegistry.
+	 */
+	public void broadcast(Object message) {
+		server.sendToAllTCP(message);
 	}
 }

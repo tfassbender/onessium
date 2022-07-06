@@ -14,16 +14,16 @@ import org.junit.jupiter.api.Test;
 
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
+import net.jfabricationgames.onnessium.NetworkDtoRegistry;
 import net.jfabricationgames.onnessium.integrationtest.network.ClientServerConnectionTestUtil;
-import net.jfabricationgames.onnessium.network.client.NetworkClient;
+import net.jfabricationgames.onnessium.network.client.Client;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
-import net.jfabricationgames.onnessium.network.server.NetworkServer;
+import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.server.handler.LoginServerHandler;
 import net.jfabricationgames.onnessium.network.server.handler.SignUpServerHandler;
 import net.jfabricationgames.onnessium.network.server.user.UserManager;
-import net.jfabricationgames.onnessium.network.shared.Network;
 import net.jfabricationgames.onnessium.user.client.LastUsedClientSettingsTest;
 import net.jfabricationgames.onnessium.user.client.LastUsedClientSettingsTestUtil;
 import net.jfabricationgames.onnessium.user.client.LoginHandler;
@@ -34,8 +34,8 @@ import net.jfabricationgames.onnessium.util.Wrapper;
 
 public class LoginHandlerIntegrationTest {
 	
-	private static NetworkServer server;
-	private static NetworkClient client;
+	private static Server server;
+	private static Client client;
 	
 	private LoginHandler loginHandler = new LoginHandler();
 	
@@ -49,15 +49,14 @@ public class LoginHandlerIntegrationTest {
 		
 		LastUsedClientSettingsTestUtil.setSettingsPropertyPathTo(LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH);
 		
-		Network.registerClass(LoginDto.class);
-		Network.registerClass(SignUpDto.class);
+		NetworkDtoRegistry.initializeNetworkClasses();
 	}
 	
 	@BeforeEach
 	public void injectDependenciesAndResetHandlers() throws Throwable {
 		CdiContainer.injectTo(this);
 		
-		client = new NetworkClient();
+		client = new Client();
 		
 		ClientServerConnectionTestUtil.reduceConnectionTimeout();
 		
@@ -65,7 +64,7 @@ public class LoginHandlerIntegrationTest {
 		client.removeAllMessageHandlersForType(LoginDto.class);
 		client.removeAllMessageHandlersForType(SignUpDto.class);
 		
-		server = new NetworkServer();
+		server = new Server();
 		server.start(ClientServerConnectionTestUtil.PORT);
 		
 		TestUtils.setFieldPerReflection(loginHandler, "responseWaitingTimeInMilliseconds", 10);
@@ -137,12 +136,12 @@ public class LoginHandlerIntegrationTest {
 	
 	@Test
 	public void testSignUpNotSuccessfulBecauseTheUsernameIsAlreadyRegistered() throws LoginException, NoSuchFieldException, IllegalAccessException {
-		SignUpServerHandler signUpHandler = createSignUpHandlerWithMockedUserManager().getKey();
+		SignUpServerHandler signUpHandler = LoginTestUtils.createSignUpHandlerWithMockedUserManager().getKey();
 		handlerRegistry.addHandler(SignUpDto.class, signUpHandler);
 		
 		String username = "unique_username_42";
 		String password = "password";
-		createTestUser(username, password);
+		LoginTestUtils.createTestUser(username, password, handlerRegistry, loginHandler);
 		
 		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.signUp(username, password, //
 				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //
@@ -152,7 +151,7 @@ public class LoginHandlerIntegrationTest {
 	
 	@Test
 	public void testSignUpNotSuccessfulBecauseThePasswordIsNotLongEnough() throws LoginException, NoSuchFieldException, IllegalAccessException {
-		SignUpServerHandler signUpHandler = createSignUpHandlerWithMockedUserManager().getKey();
+		SignUpServerHandler signUpHandler = LoginTestUtils.createSignUpHandlerWithMockedUserManager().getKey();
 		handlerRegistry.addHandler(SignUpDto.class, signUpHandler);
 		
 		LoginException loginException = assertThrows(LoginException.class, () -> loginHandler.signUp("user_with_to_short_password", "1234", //
@@ -212,7 +211,7 @@ public class LoginHandlerIntegrationTest {
 	
 	@Test
 	public void testLoginNotSuccessfulBecauseUserIsNotRegistered() throws LoginException, NoSuchFieldException, IllegalAccessException {
-		LoginServerHandler loginServerHandler = createLoginHandlerWithMockedUserManager().getKey();
+		LoginServerHandler loginServerHandler = LoginTestUtils.createLoginHandlerWithMockedUserManager().getKey();
 		handlerRegistry.addHandler(LoginDto.class, loginServerHandler);
 		
 		String username = "not_existing_username";
@@ -224,15 +223,15 @@ public class LoginHandlerIntegrationTest {
 	
 	@Test
 	public void testLoginNotSuccessfulBecausePasswordIsWrong() throws LoginException, NoSuchFieldException, IllegalAccessException, InterruptedException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
-		Pair<LoginServerHandler, UserManager> loginServerHandler = createLoginHandlerWithMockedUserManager();
+		Pair<LoginServerHandler, UserManager> loginServerHandler = LoginTestUtils.createLoginHandlerWithMockedUserManager();
 		handlerRegistry.addHandler(LoginDto.class, loginServerHandler.getKey());
 		
 		String username = "user_with_password";
 		String password = "correct_password";
-		createTestUser(username, password);
+		LoginTestUtils.createTestUser(username, password, handlerRegistry, loginHandler);
 		
 		// give the server some time to handle the sign up of the user
-		Thread.sleep(100);
+		Thread.sleep(10);
 		// reload the users, because the login handler uses a different instance of the user manager (because they are mocked)
 		TestUtils.invokePrivateMethod(loginServerHandler.getValue(), "loadUsers");
 		
@@ -240,34 +239,5 @@ public class LoginHandlerIntegrationTest {
 				ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, //
 				() -> {}));
 		assertEquals("The password for user \"" + username + "\" is not correct.", loginException.getMessage());
-	}
-	
-	private Pair<SignUpServerHandler, UserManager> createSignUpHandlerWithMockedUserManager() throws NoSuchFieldException, IllegalAccessException {
-		SignUpServerHandler handler = new SignUpServerHandler();
-		UserManager mocked = new UserManager("./config/users_tmp.json");
-		TestUtils.setFieldPerReflection(handler, "userManager", mocked);
-		
-		return Pair.of(handler, mocked);
-	}
-	
-	private Pair<LoginServerHandler, UserManager> createLoginHandlerWithMockedUserManager() throws NoSuchFieldException, IllegalAccessException {
-		LoginServerHandler handler = new LoginServerHandler();
-		UserManager mocked = new UserManager("./config/users_tmp.json");
-		TestUtils.setFieldPerReflection(handler, "userManager", mocked);
-		
-		return Pair.of(handler, mocked);
-	}
-	
-	private void createTestUser(String username, String password) throws NoSuchFieldException, IllegalAccessException {
-		// create a sign up handler, enable the server to store the signed up user
-		SignUpServerHandler signUpHandler = createSignUpHandlerWithMockedUserManager().getKey();
-		handlerRegistry.addHandler(SignUpDto.class, signUpHandler);
-		
-		try {
-			loginHandler.signUp(username, password, ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, () -> {});
-		}
-		catch (LoginException e) {
-			// the first sign up may not work, because the user file was not deleted
-		}
 	}
 }

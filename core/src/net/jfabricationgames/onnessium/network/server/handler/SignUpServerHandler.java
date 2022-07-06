@@ -3,7 +3,7 @@ package net.jfabricationgames.onnessium.network.server.handler;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
-import net.jfabricationgames.onnessium.network.server.NetworkConnection;
+import net.jfabricationgames.onnessium.network.server.Connection;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandler;
 import net.jfabricationgames.onnessium.network.server.user.UserAccount;
 import net.jfabricationgames.onnessium.network.server.user.UserManager;
@@ -19,7 +19,7 @@ public class SignUpServerHandler implements ServerMessageHandler<SignUpDto> {
 	}
 	
 	@Override
-	public void handleMessage(NetworkConnection connection, SignUpDto message) {
+	public void handleMessage(Connection connection, SignUpDto message) {
 		if (userManager.isUserRegistered(message.username)) {
 			message.successful = false;
 			message.errorMessage = "A user with the name \"" + message.username + "\" is already registered on this server.";

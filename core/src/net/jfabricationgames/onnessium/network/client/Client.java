@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import com.badlogic.gdx.Gdx;
-import com.esotericsoftware.kryonet.Client;
 
 import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
 import net.jfabricationgames.onnessium.network.shared.Network;
@@ -12,20 +11,20 @@ import net.jfabricationgames.onnessium.network.shared.exception.ConnectException
 import net.jfabricationgames.onnessium.network.shared.exception.ResponseNotReceivedException;
 
 @ApplicationScoped
-public class NetworkClient {
+public class Client {
 	
 	public static final int DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS = 5000;
 	
-	private Client client;
-	private NetworkClientListener listener;
+	private com.esotericsoftware.kryonet.Client client;
+	private ClientListener listener;
 	
-	public NetworkClient() {
-		client = new Client();
+	public Client() {
+		client = new com.esotericsoftware.kryonet.Client();
 		client.start();
 		
-		Network.registerDtoClasses(client);
+		Network.registerDtoClassesInEndpoint(client);
 		
-		listener = new NetworkClientListener();
+		listener = new ClientListener();
 		client.addListener(listener);
 	}
 	
@@ -90,14 +89,14 @@ public class NetworkClient {
 	 *     .get(); // wait for the response of the server (for a maximum of 5 seconds)
 	 * </code>
 	 * 
-	 * NOTE: To use a custom maximum waiting time use the method {@link NetworkClient#send(Object, ClientMessageHandler, Class, long)}.
+	 * NOTE: To use a custom maximum waiting time use the method {@link Client#send(Object, ClientMessageHandler, Class, long)}.
 	 */
 	public <T> CompletableFuture<Void> send(Object object, ClientMessageHandler<T> responseHandler, Class<T> responseType) {
 		return send(object, responseHandler, responseType, DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS);
 	}
 	
 	/**
-	 * See {@link NetworkClient#send(Object, ClientMessageHandler, Class)}
+	 * See {@link Client#send(Object, ClientMessageHandler, Class)}
 	 */
 	public <T> CompletableFuture<Void> send(Object object, ClientMessageHandler<T> responseHandler, Class<T> responseType, long maximumWaitingTimeInMilliseconds) {
 		CompletableFuture<Void> waitingFuture = createWaitingCompletableFuture(maximumWaitingTimeInMilliseconds);

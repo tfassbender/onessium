@@ -5,7 +5,7 @@ import java.util.concurrent.ExecutionException;
 
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
-import net.jfabricationgames.onnessium.network.client.NetworkClient;
+import net.jfabricationgames.onnessium.network.client.Client;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.util.Wrapper;
@@ -18,7 +18,7 @@ public class LoginHandler {
 	private static final String DEFAULT_SIGNUP_FAILED_MESSAGE_SERVER_NOT_RESPONDING = "Sign up failed - The server is not responding";
 	
 	@Inject
-	private NetworkClient networkClient;
+	private Client networkClient;
 	
 	private LoginException loginException;
 	private LoginException signUpException;

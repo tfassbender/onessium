@@ -17,12 +17,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
-import com.esotericsoftware.kryonet.Client;
-
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
-import net.jfabricationgames.onnessium.network.client.NetworkClient;
-import net.jfabricationgames.onnessium.network.server.NetworkServer;
+import net.jfabricationgames.onnessium.network.client.Client;
+import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.shared.Network;
 import net.jfabricationgames.onnessium.network.shared.exception.ConnectException;
@@ -36,8 +34,8 @@ import net.jfabricationgames.onnessium.util.Wrapper;
  */
 public class ClientServerCommunicationIntegrationTest {
 	
-	private static NetworkClient client;
-	private static NetworkServer server;
+	private static Client client;
+	private static Server server;
 	
 	private Throwable clientConnectException;
 	
@@ -49,7 +47,7 @@ public class ClientServerCommunicationIntegrationTest {
 		TestUtils.mockGdxApplication();
 		TestUtils.createCdiContainer();
 		
-		Network.registerClass(SimpleMessage.class);
+		Network.registerDtoClass(SimpleMessage.class);
 	}
 	
 	@AfterAll
@@ -68,7 +66,7 @@ public class ClientServerCommunicationIntegrationTest {
 		}
 		
 		// create a new client and server for each of the tests, to make them independent
-		Pair<NetworkClient, NetworkServer> clientAndServer = ClientServerConnectionTestUtil.createConnection();
+		Pair<Client, Server> clientAndServer = ClientServerConnectionTestUtil.createConnection();
 		client = clientAndServer.getKey();
 		server = clientAndServer.getValue();
 		
@@ -157,9 +155,9 @@ public class ClientServerCommunicationIntegrationTest {
 	@Test
 	public void testSendServerSideUnregisteredMessage() throws Exception {
 		// register the message on the client side, but not on the server side
-		Field field = NetworkClient.class.getDeclaredField("client");
+		Field field = Client.class.getDeclaredField("client");
 		field.setAccessible(true);
-		Client kryoClient = (Client) field.get(client);
+		com.esotericsoftware.kryonet.Client kryoClient = (com.esotericsoftware.kryonet.Client) field.get(client);
 		field.setAccessible(false);
 		kryoClient.getKryo().register(UnregisteredMessage.class);
 		
@@ -182,7 +180,7 @@ public class ClientServerCommunicationIntegrationTest {
 		client.disconnect();
 		server.stop();
 		
-		client = new NetworkClient();
+		client = new Client();
 		
 		ClientServerConnectionTestUtil.reduceConnectionTimeout();
 		

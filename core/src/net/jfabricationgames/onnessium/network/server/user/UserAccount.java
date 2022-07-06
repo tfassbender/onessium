@@ -1,5 +1,7 @@
 package net.jfabricationgames.onnessium.network.server.user;
 
+import net.jfabricationgames.onnessium.network.dto.user.UserDto;
+
 public class UserAccount {
 	
 	public String username;
@@ -20,5 +22,9 @@ public class UserAccount {
 	public UserAccount setOnline(boolean online) {
 		this.online = online;
 		return this;
+	}
+	
+	public UserDto toUserDto() {
+		return new UserDto().setUsername(username).setOnline(online);
 	}
 }

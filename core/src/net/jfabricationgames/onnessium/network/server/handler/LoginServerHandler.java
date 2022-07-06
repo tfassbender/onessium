@@ -3,7 +3,7 @@ package net.jfabricationgames.onnessium.network.server.handler;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
-import net.jfabricationgames.onnessium.network.server.NetworkConnection;
+import net.jfabricationgames.onnessium.network.server.Connection;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandler;
 import net.jfabricationgames.onnessium.network.server.user.UserManager;
 
@@ -17,7 +17,7 @@ public class LoginServerHandler implements ServerMessageHandler<LoginDto> {
 	}
 	
 	@Override
-	public void handleMessage(NetworkConnection connection, LoginDto message) {
+	public void handleMessage(Connection connection, LoginDto message) {
 		if (!userManager.isUserRegistered(message.username)) {
 			message.successful = false;
 			message.errorMessage = "A user with the name \"" + message.username + "\" is not registered on this server.";

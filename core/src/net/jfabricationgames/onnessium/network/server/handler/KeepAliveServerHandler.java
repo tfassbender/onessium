@@ -2,7 +2,7 @@ package net.jfabricationgames.onnessium.network.server.handler;
 
 import com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive;
 
-import net.jfabricationgames.onnessium.network.server.NetworkConnection;
+import net.jfabricationgames.onnessium.network.server.Connection;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandler;
 
 /**
@@ -11,7 +11,7 @@ import net.jfabricationgames.onnessium.network.server.ServerMessageHandler;
 public class KeepAliveServerHandler implements ServerMessageHandler<KeepAlive> {
 	
 	@Override
-	public void handleMessage(NetworkConnection connection, KeepAlive message) {
+	public void handleMessage(Connection connection, KeepAlive message) {
 		// do nothing here
 	}
 }

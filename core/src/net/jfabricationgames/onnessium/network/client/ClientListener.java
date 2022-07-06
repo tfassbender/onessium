@@ -13,11 +13,11 @@ import com.esotericsoftware.kryonet.Listener;
 
 import net.jfabricationgames.cdi.CdiContainer;
 
-public class NetworkClientListener extends Listener {
+public class ClientListener extends Listener {
 	
 	private Map<Class<?>, List<ClientMessageHandler<?>>> messageHandlers = new HashMap<>();
 	
-	public NetworkClientListener() {
+	public ClientListener() {
 		CdiContainer.injectTo(this);
 	}
 	

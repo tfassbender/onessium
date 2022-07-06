@@ -1,7 +1,7 @@
 package net.jfabricationgames.onnessium.integrationtest.network;
 
-import net.jfabricationgames.onnessium.network.client.NetworkClient;
-import net.jfabricationgames.onnessium.network.server.NetworkServer;
+import net.jfabricationgames.onnessium.network.client.Client;
+import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.util.Pair;
 import net.jfabricationgames.onnessium.util.TestUtils;
 
@@ -12,13 +12,13 @@ public class ClientServerConnectionTestUtil {
 	
 	private static Throwable clientConnectException;
 	
-	public static Pair<NetworkClient, NetworkServer> createConnection() throws Throwable {
+	public static Pair<Client, Server> createConnection() throws Throwable {
 		return createConnection(HOST, PORT);
 	}
 	
-	public static Pair<NetworkClient, NetworkServer> createConnection(String host, int port) throws Throwable {
-		NetworkServer server = new NetworkServer();
-		NetworkClient client = new NetworkClient();
+	public static Pair<Client, Server> createConnection(String host, int port) throws Throwable {
+		Server server = new Server();
+		Client client = new Client();
 		
 		clientConnectException = null;
 		
@@ -42,6 +42,6 @@ public class ClientServerConnectionTestUtil {
 	 * Reduce the connection timeout to 100 milliseconds, so the test doesn't take too long.
 	 */
 	public static void reduceConnectionTimeout() throws NoSuchFieldException, IllegalAccessException {
-		TestUtils.setStaticFinalFieldPerReflection(NetworkClient.class, "DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS", 100);
+		TestUtils.setStaticFinalFieldPerReflection(Client.class, "DIRECT_RESPONSE_MAXIMUM_WAITING_TIME_IN_MILLISECONDS", 100);
 	}
 }

@@ -38,7 +38,8 @@ public class Game extends com.badlogic.gdx.Game {
 	public void create() {
 		preGameConfigurator.run();
 		initializeCdiContainer();
-		initializeNetworkClasses();
+		NetworkDtoRegistry.initializeNetworkClasses();
+		ClientHandlerRegistry.initializeClientHandlers();
 		
 		// do not call this from the constructor, or it will cause an UnsatisfiedLinkError when creating a SpriteBatch or a Stage in LoginScreen
 		setScreen(new LoginScreen());
@@ -52,9 +53,5 @@ public class Game extends com.badlogic.gdx.Game {
 			log.error("Could not create CDI container", e);
 			Gdx.app.exit();
 		}
-	}
-	
-	private void initializeNetworkClasses() {
-		NetworkDtoRegistry.initializeNetworkClasses();
 	}
 }

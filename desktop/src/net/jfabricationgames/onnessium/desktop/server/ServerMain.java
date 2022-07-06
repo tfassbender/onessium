@@ -17,7 +17,7 @@ import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.NetworkDtoRegistry;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
-import net.jfabricationgames.onnessium.network.server.NetworkServer;
+import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.server.handler.KeepAliveServerHandler;
 import net.jfabricationgames.onnessium.network.server.handler.LoginServerHandler;
@@ -33,7 +33,7 @@ public class ServerMain {
 	public static final String SERVER_PROPERTY_PORT = "port";
 	
 	@Inject
-	private NetworkServer server;
+	private Server server;
 	@Inject
 	private ServerMessageHandlerRegistry handlerRegistry;
 	

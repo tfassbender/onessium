@@ -16,7 +16,7 @@ public class Network {
 	/**
 	 * Register DTOs centralised, so the implementation is shared in server and client.
 	 */
-	public static void registerDtoClasses(EndPoint endPoint) {
+	public static void registerDtoClassesInEndpoint(EndPoint endPoint) {
 		Kryo kryo = endPoint.getKryo();
 		
 		for (Class<?> clazz : registeredClasses) {
@@ -24,7 +24,7 @@ public class Network {
 		}
 	}
 	
-	public static void registerClass(Class<?> clazz) {
+	public static void registerDtoClass(Class<?> clazz) {
 		registeredClasses.add(clazz);
 	}
 	

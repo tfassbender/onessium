@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +15,12 @@ import org.slf4j.LoggerFactory;
 import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter.OutputType;
 
+import net.jfabricationgames.cdi.CdiContainer;
+import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
+import net.jfabricationgames.onnessium.network.dto.user.UserDto;
+import net.jfabricationgames.onnessium.network.dto.user.UserListDto;
+import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.shared.PasswordEncryptor;
 
 @ApplicationScoped
@@ -24,10 +31,11 @@ public class UserManager {
 	public static final String USER_FILE_DIRECTORY = "./config";
 	public static final String USER_FILE_LOCATION = USER_FILE_DIRECTORY + "/users.json";
 	
-	private String userFile = USER_FILE_LOCATION; // can be changed in tests to not overwrite the configuration
+	@Inject
+	private Server server;
 	
+	private String userFile; // can be changed in tests to not overwrite the configuration
 	private Map<String, UserAccount> users;
-	
 	private Json json;
 	
 	public UserManager() {
@@ -37,8 +45,11 @@ public class UserManager {
 	/**
 	 * Used for testing, to not overwrite the server configuration.
 	 */
-	protected UserManager(String path) {
+	public UserManager(String path) {
 		this.userFile = path;
+		
+		CdiContainer.injectTo(this);
+		
 		json = new Json(OutputType.json); // write normal JSON with all quotes
 		json.setUsePrototypes(false); // write all fields (do not ignore default values)
 		json.setTypeName(null); // do not include class names
@@ -69,6 +80,8 @@ public class UserManager {
 	public void addUser(UserAccount user) {
 		users.put(user.username, user);
 		storeUsers();
+		
+		sendUserListToClients();
 	}
 	
 	private void storeUsers() {
@@ -88,5 +101,13 @@ public class UserManager {
 	
 	public void setOnlineStateOf(String username, boolean online) {
 		users.get(username).online = online;
+		
+		sendUserListToClients();
+	}
+	
+	private void sendUserListToClients() {
+		List<UserDto> userDtos = users.values().stream().map(UserAccount::toUserDto).collect(Collectors.toList());
+		UserListDto userListDto = new UserListDto().setUsers(userDtos);
+		server.broadcast(userListDto);
 	}
 }

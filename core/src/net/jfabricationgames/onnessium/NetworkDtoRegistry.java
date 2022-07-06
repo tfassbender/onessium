@@ -1,10 +1,16 @@
 package net.jfabricationgames.onnessium;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+
+import com.badlogic.gdx.maps.Map;
 
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
+import net.jfabricationgames.onnessium.network.dto.user.UserDto;
+import net.jfabricationgames.onnessium.network.dto.user.UserListDto;
 import net.jfabricationgames.onnessium.network.shared.Network;
 
 /**
@@ -15,7 +21,15 @@ public class NetworkDtoRegistry {
 	private static final List<Class<?>> DTO_CLASSES = Arrays.asList(//
 			// user
 			LoginDto.class, //
-			SignUpDto.class //
+			SignUpDto.class, //
+			UserDto.class, //
+			UserListDto.class, //
+			
+			// common
+			List.class, //
+			ArrayList.class, //
+			Map.class, //
+			HashMap.class //
 	);
 	
 	/**
@@ -23,7 +37,7 @@ public class NetworkDtoRegistry {
 	 */
 	public static void initializeNetworkClasses() {
 		for (Class<?> clazz : DTO_CLASSES) {
-			Network.registerClass(clazz);
+			Network.registerDtoClass(clazz);
 		}
 	}
 }

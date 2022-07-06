@@ -28,11 +28,11 @@ public class ServerMessageHandlerRegistry {
 		handlers.clear();
 	}
 	
-	public void handleMessage(NetworkConnection connection, Object message) {
+	public void handleMessage(Connection connection, Object message) {
 		handleMessage(connection, message, message.getClass());
 	}
 	
-	private <T> void handleMessage(NetworkConnection connection, Object message, Class<T> messageType) {
+	private <T> void handleMessage(Connection connection, Object message, Class<T> messageType) {
 		Optional<ServerMessageHandler<T>> handler = handlerForType(messageType);
 		if (handler.isPresent()) {
 			handler.get().handleMessage(connection, messageType.cast(message));
