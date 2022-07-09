@@ -109,11 +109,6 @@ public class LoginIntegrationTest {
 		new File(LastUsedClientSettingsTest.TEMPORARY_SETTINGS_FILE_PATH).delete();
 	}
 	
-	/**
-	 * NOTE: This test might fail in about 5% of test runs. The reason seems to be that two different 
-	 * ServerMessageHandlerRegistry instances are created, which should not be possible.
-	 * The reasons for this bug are unknown.
-	 */
 	@Test
 	public void testReceiveUserListAfterLogin() throws LoginException, InterruptedException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
 		// set up the handler for the user list, that collects the user list and sends an update to all registered listeners
