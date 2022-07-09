@@ -20,10 +20,12 @@ import net.jfabricationgames.onnessium.NetworkDtoRegistry;
 import net.jfabricationgames.onnessium.integrationtest.network.ClientServerConnectionTestUtil;
 import net.jfabricationgames.onnessium.network.client.Client;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
+import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.dto.user.UserDto;
 import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.server.handler.LoginServerHandler;
+import net.jfabricationgames.onnessium.network.server.handler.SignUpServerHandler;
 import net.jfabricationgames.onnessium.network.server.user.UserManager;
 import net.jfabricationgames.onnessium.user.UserListManager;
 import net.jfabricationgames.onnessium.user.client.LastUsedClientSettingsTest;
@@ -53,6 +55,9 @@ public class LoginIntegrationTest {
 	
 	private LoginHandler loginHandler = new LoginHandler();
 	
+	private String username = "Arthur_Dent_unique_cvh38ch3";
+	private String password = "secure_password_1!";
+	
 	@BeforeAll
 	public static void setup() throws Exception {
 		TestUtils.mockGdxApplication();
@@ -65,13 +70,29 @@ public class LoginIntegrationTest {
 	}
 	
 	@BeforeEach
-	public void injectDependenciesAndResetHandlers() throws Throwable {
+	public void setupServer() throws Throwable {
 		CdiContainer.injectTo(this);
 		
+		Pair<SignUpServerHandler, UserManager> signUpServerHandler = LoginTestUtils.createSignUpHandlerWithMockedUserManager();
+		handlerRegistry.addHandler(SignUpDto.class, signUpServerHandler.getKey());
+		Pair<LoginServerHandler, UserManager> loginServerHandler = LoginTestUtils.createLoginHandlerWithMockedUserManager();
+		handlerRegistry.addHandler(LoginDto.class, loginServerHandler.getKey());
+		
 		ClientServerConnectionTestUtil.reduceConnectionTimeout();
-		handlerRegistry.removeAllHandlers();
 		server.start(ClientServerConnectionTestUtil.PORT);
 		TestUtils.setFieldPerReflection(loginHandler, "responseWaitingTimeInMilliseconds", 50);
+		
+		try {
+			loginHandler.signUp(username, password, ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, () -> {});
+		}
+		catch (LoginException e) {
+			// the first sign up may not work, because the user file was not deleted
+		}
+		
+		// give the server some time to handle the sign up of the user
+		Thread.sleep(10);
+		// reload the users, because the login handler uses a different instance of the user manager (because they are mocked)
+		TestUtils.invokePrivateMethod(loginServerHandler.getValue(), "loadUsers");
 	}
 	
 	@AfterEach
@@ -89,22 +110,12 @@ public class LoginIntegrationTest {
 	}
 	
 	/**
-	 * NOTE: This test might fail in about 10% of test runs for unknown reasons.
+	 * NOTE: This test might fail in about 5% of test runs. The reason seems to be that two different 
+	 * ServerMessageHandlerRegistry instances are created, which should not be possible.
+	 * The reasons for this bug are unknown.
 	 */
 	@Test
 	public void testReceiveUserListAfterLogin() throws LoginException, InterruptedException, NoSuchFieldException, IllegalAccessException, NoSuchMethodException, SecurityException, IllegalArgumentException, InvocationTargetException {
-		Pair<LoginServerHandler, UserManager> loginServerHandler = LoginTestUtils.createLoginHandlerWithMockedUserManager();
-		handlerRegistry.addHandler(LoginDto.class, loginServerHandler.getKey());
-		
-		String username = "Arthur_Dent_unique_cvh38ch3";
-		String password = "secure_password_1!";
-		LoginTestUtils.createTestUser(username, password, handlerRegistry, loginHandler);
-		
-		// give the server some time to handle the sign up of the user
-		Thread.sleep(10);
-		// reload the users, because the login handler uses a different instance of the user manager (because they are mocked)
-		TestUtils.invokePrivateMethod(loginServerHandler.getValue(), "loadUsers");
-		
 		// set up the handler for the user list, that collects the user list and sends an update to all registered listeners
 		Wrapper<List<UserDto>> userListWrapper = Wrapper.empty();
 		userListManager.addUpdateListener(listUpdate -> userListWrapper.wrapped = listUpdate);
