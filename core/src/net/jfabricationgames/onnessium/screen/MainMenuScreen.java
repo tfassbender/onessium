@@ -38,6 +38,7 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 		
 		userListOnline = new com.badlogic.gdx.scenes.scene2d.ui.List<>(skinManager.getDefaultSkin());
 		updateUserList(userListManager.getUsers());
+		userListManager.addUpdateListener(this);
 	}
 	
 	@Override
@@ -141,7 +142,7 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 		String message = textAreaMessage.getText().trim();
 		if (!message.isEmpty()) {
 			//TODO send message
-			appendChatText("", message);//TODO add the name of the logged in user
+			appendChatText(userListManager.localUser.username, message);
 			textAreaMessage.setText("");
 		}
 	}

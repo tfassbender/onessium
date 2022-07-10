@@ -29,10 +29,10 @@ public class SignUpServerHandler implements ServerMessageHandler<SignUpDto> {
 			message.errorMessage = "The password must be at least 5 characters long.";
 		}
 		else {
-			userManager.addUser(new UserAccount()//
-					.setUsername(message.username)//
-					.setEncryptedPassword(PasswordEncryptor.encrypt(message.password))//
-					.setOnline(true));
+			userManager.addUser(new UserAccount() //
+					.setUsername(message.username) //
+					.setEncryptedPassword(PasswordEncryptor.encrypt(message.password)));
+			userManager.setOnlineStateOf(message.username, true, connection);
 			
 			message.successful = true;
 		}

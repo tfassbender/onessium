@@ -28,7 +28,7 @@ public class LoginServerHandler implements ServerMessageHandler<LoginDto> {
 		}
 		else {
 			message.successful = true;
-			userManager.setOnlineStateOf(message.username, true);
+			userManager.setOnlineStateOf(message.username, true, connection);
 		}
 		
 		// send the response to the client

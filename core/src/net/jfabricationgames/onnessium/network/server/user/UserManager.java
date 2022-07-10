@@ -20,6 +20,7 @@ import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
 import net.jfabricationgames.onnessium.network.dto.user.UserDto;
 import net.jfabricationgames.onnessium.network.dto.user.UserListDto;
+import net.jfabricationgames.onnessium.network.server.Connection;
 import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.shared.PasswordEncryptor;
 
@@ -36,6 +37,7 @@ public class UserManager {
 	
 	private String userFile; // can be changed in tests to not overwrite the configuration
 	private Map<String, UserAccount> users;
+	private Map<Connection, String> connectionToUsername = new HashMap<>();
 	private Json json;
 	
 	public UserManager() {
@@ -60,6 +62,7 @@ public class UserManager {
 	private void loadUsers() {
 		try (FileInputStream in = new FileInputStream(userFile)) {
 			users = json.fromJson(HashMap.class, UserAccount.class, in);
+			users.values().forEach(user -> user.online = false);
 		}
 		catch (IOException e) {
 			log.info("The users could not be loaded, because the users file does not exist.");
@@ -80,8 +83,6 @@ public class UserManager {
 	public void addUser(UserAccount user) {
 		users.put(user.username, user);
 		storeUsers();
-		
-		sendUserListToClients();
 	}
 	
 	private void storeUsers() {
@@ -99,7 +100,14 @@ public class UserManager {
 		}
 	}
 	
-	public void setOnlineStateOf(String username, boolean online) {
+	public void setOnlineStateOf(String username, boolean online, Connection connection) {
+		if (username == null) {
+			username = connectionToUsername.get(connection);
+		}
+		else {
+			connectionToUsername.put(connection, username);
+		}
+		
 		users.get(username).online = online;
 		
 		sendUserListToClients();

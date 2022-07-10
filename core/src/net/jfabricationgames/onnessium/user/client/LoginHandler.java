@@ -8,6 +8,8 @@ import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.network.client.Client;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
+import net.jfabricationgames.onnessium.network.dto.user.UserDto;
+import net.jfabricationgames.onnessium.user.UserListManager;
 import net.jfabricationgames.onnessium.util.Wrapper;
 
 public class LoginHandler {
@@ -19,6 +21,8 @@ public class LoginHandler {
 	
 	@Inject
 	private Client networkClient;
+	@Inject
+	private UserListManager userListManager;
 	
 	private LoginException loginException;
 	private LoginException signUpException;
@@ -72,6 +76,8 @@ public class LoginHandler {
 			throw loginException;
 		}
 		
+		userListManager.localUser = new UserDto().setUsername(username).setOnline(true);
+		
 		LastUsedClientSettings.store(username, password, host, port);
 	}
 	
@@ -117,6 +123,8 @@ public class LoginHandler {
 		if (signUpException != null) {
 			throw signUpException;
 		}
+		
+		userListManager.localUser = new UserDto().setUsername(username).setOnline(true);
 		
 		LastUsedClientSettings.store(username, password, host, port);
 	}

@@ -1,6 +1,7 @@
 package net.jfabricationgames.onnessium.network.dto.user;
 
 public class UserDto {
+	
 	public String username;
 	public boolean online;
 	

@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Listener;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
+import net.jfabricationgames.onnessium.network.dto.user.LogoutDto;
 import net.jfabricationgames.onnessium.network.shared.Network;
 
 @ApplicationScoped
@@ -43,8 +44,8 @@ public class Server {
 			
 			@Override
 			public void disconnected(com.esotericsoftware.kryonet.Connection connection) {
-				// NetworkConnection chatConnection = (NetworkConnection) connection;
-				//TODO logout
+				Connection chatConnection = (Connection) connection;
+				serverMessageHandlerRegistry.handleMessage(chatConnection, new LogoutDto());
 			}
 		});
 		

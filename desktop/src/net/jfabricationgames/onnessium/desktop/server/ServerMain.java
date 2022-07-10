@@ -16,11 +16,13 @@ import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.NetworkDtoRegistry;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
+import net.jfabricationgames.onnessium.network.dto.user.LogoutDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.server.handler.KeepAliveServerHandler;
 import net.jfabricationgames.onnessium.network.server.handler.LoginServerHandler;
+import net.jfabricationgames.onnessium.network.server.handler.LogoutServerHandler;
 import net.jfabricationgames.onnessium.network.server.handler.SignUpServerHandler;
 import net.jfabricationgames.onnessium.network.shared.Network;
 
@@ -69,6 +71,7 @@ public class ServerMain {
 		handlerRegistry.addHandler(KeepAlive.class, new KeepAliveServerHandler());
 		handlerRegistry.addHandler(LoginDto.class, new LoginServerHandler());
 		handlerRegistry.addHandler(SignUpDto.class, new SignUpServerHandler());
+		handlerRegistry.addHandler(LogoutDto.class, new LogoutServerHandler());
 	}
 	
 	private void initializeCdiContainer() throws IOException {

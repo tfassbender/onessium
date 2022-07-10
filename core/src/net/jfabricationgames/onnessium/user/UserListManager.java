@@ -12,6 +12,8 @@ public class UserListManager {
 	
 	private static final Comparator<UserDto> ONLINE_FIRST = Comparator.comparing(dto -> dto.online);
 	
+	public UserDto localUser;
+	
 	private List<UserDto> users;
 	private List<UserListUpdateListener> updateListeners = new ArrayList<>();
 	
