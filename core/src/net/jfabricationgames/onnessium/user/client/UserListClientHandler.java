@@ -17,7 +17,6 @@ public class UserListClientHandler implements ClientMessageHandler<UserListDto> 
 	
 	@Override
 	public void handleMessage(UserListDto message) {
-		userListManager.users = message.users;
-		userListManager.onUpdate();
+		userListManager.updateUserList(message.users);
 	}
 }

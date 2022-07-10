@@ -8,10 +8,13 @@ import org.slf4j.LoggerFactory;
 import com.badlogic.gdx.Gdx;
 
 import net.jfabricationgames.cdi.CdiContainer;
+import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
 import net.jfabricationgames.cdi.exception.CdiException;
 import net.jfabricationgames.onnessium.screen.LoginScreen;
+import net.jfabricationgames.onnessium.screen.ScreenChanger;
 
-public class Game extends com.badlogic.gdx.Game {
+@ApplicationScoped
+public class Game extends com.badlogic.gdx.Game implements ScreenChanger {
 	
 	private static final Logger log = LoggerFactory.getLogger(Game.class);
 	
@@ -41,7 +44,10 @@ public class Game extends com.badlogic.gdx.Game {
 		NetworkDtoRegistry.initializeNetworkClasses();
 		ClientHandlerRegistry.initializeClientHandlers();
 		
-		// do not call this from the constructor, or it will cause an UnsatisfiedLinkError when creating a SpriteBatch or a Stage in LoginScreen
+		/*
+		 * Do not call this from the constructor, or it will cause an UnsatisfiedLinkError when 
+		 * creating a SpriteBatch or a Stage in LoginScreen.
+		 */
 		setScreen(new LoginScreen());
 	}
 	
