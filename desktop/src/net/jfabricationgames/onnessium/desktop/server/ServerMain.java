@@ -15,7 +15,7 @@ import com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.NetworkDtoRegistry;
-import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
+import net.jfabricationgames.onnessium.network.dto.chat.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.dto.user.LogoutDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;

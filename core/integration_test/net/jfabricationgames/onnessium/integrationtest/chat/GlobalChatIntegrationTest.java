@@ -13,14 +13,18 @@ import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.NetworkDtoRegistry;
 import net.jfabricationgames.onnessium.chat.ChatClientManager;
 import net.jfabricationgames.onnessium.chat.ChatMessageClientHandler;
-import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
 import net.jfabricationgames.onnessium.integrationtest.network.ClientServerConnectionTestUtil;
 import net.jfabricationgames.onnessium.integrationtest.user.client.LoginTestUtils;
 import net.jfabricationgames.onnessium.network.client.Client;
+import net.jfabricationgames.onnessium.network.dto.chat.ChatMessageDto;
+import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
 import net.jfabricationgames.onnessium.network.server.handler.ChatMessageServerHandler;
+import net.jfabricationgames.onnessium.network.server.handler.LoginServerHandler;
+import net.jfabricationgames.onnessium.network.server.user.UserManager;
 import net.jfabricationgames.onnessium.user.client.LoginHandler;
+import net.jfabricationgames.onnessium.util.Pair;
 import net.jfabricationgames.onnessium.util.TestUtils;
 import net.jfabricationgames.onnessium.util.Wrapper;
 
@@ -50,7 +54,10 @@ public class GlobalChatIntegrationTest {
 		
 		CdiContainer.injectTo(this);
 		
+		serverMessageHandlerRegistry.removeAllHandlers();
 		serverMessageHandlerRegistry.addHandler(ChatMessageDto.class, new ChatMessageServerHandler());
+		Pair<LoginServerHandler, UserManager> loginServerHandler = LoginTestUtils.createLoginHandlerWithMockedUserManager();
+		serverMessageHandlerRegistry.addHandler(LoginDto.class, loginServerHandler.getKey());
 		
 		ClientServerConnectionTestUtil.reduceConnectionTimeout();
 		server.start(ClientServerConnectionTestUtil.PORT);
@@ -63,13 +70,32 @@ public class GlobalChatIntegrationTest {
 		
 		LoginTestUtils.createTestUser("chat_user_1", "secure_password_1!", serverMessageHandlerRegistry, loginHandler1);
 		LoginTestUtils.createTestUser("chat_user_2", "secure_password_1!", serverMessageHandlerRegistry, loginHandler2);
+		
+		// give the server some time to handle the sign up of the user
+		Thread.sleep(10);
+		
+		TestUtils.setFieldPerReflection(loginHandler1, "responseWaitingTimeInMilliseconds", 50);
+		TestUtils.setFieldPerReflection(loginHandler2, "responseWaitingTimeInMilliseconds", 50);
+		
+		loginHandler1.login("chat_user_1", "secure_password_1!", ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, () -> {});
+		loginHandler2.login("chat_user_2", "secure_password_1!", ClientServerConnectionTestUtil.HOST, ClientServerConnectionTestUtil.PORT, () -> {});
 	}
 	
 	@AfterEach
-	public void tearDown() {
+	public void tearDown() throws NoSuchFieldException, IllegalAccessException {
 		CdiContainer.destroy();
+		
+		client1.disconnect();
+		client2.disconnect();
+		server.stop();
+		
+		TestUtils.setFieldPerReflection(loginHandler1, "responseWaitingTimeInMilliseconds", 5000);
+		TestUtils.setFieldPerReflection(loginHandler2, "responseWaitingTimeInMilliseconds", 5000);
 	}
 	
+	/**
+	 * TODO the test is not independent. When starting this test class alone it works, but not when starting all tests.  
+	 */
 	@Test
 	public void testGlobalChat() throws InterruptedException {
 		client1.addMessageHandler(ChatMessageDto.class, new ChatMessageClientHandler());

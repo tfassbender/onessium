@@ -3,8 +3,8 @@ package net.jfabricationgames.onnessium;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.chat.ChatMessageClientHandler;
-import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.client.Client;
+import net.jfabricationgames.onnessium.network.dto.chat.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.dto.user.UserListDto;
 import net.jfabricationgames.onnessium.user.client.UserListClientHandler;
 

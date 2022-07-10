@@ -18,5 +18,5 @@ public class ScreenDependencyRules {
 			.resideInAPackage("..onnessium.screen..") //
 			.should().onlyDependOnClassesThat() //
 			.resideInAnyPackage(ArchUnitUtils.addDefaultLibraryPackages("..onnessium.network..", "..onnessium.input..", //
-					"..onnessium.screen..", "..onnessium.user.."));
+					"..onnessium.screen..", "..onnessium.user..", "..onnessium.chat.."));
 }

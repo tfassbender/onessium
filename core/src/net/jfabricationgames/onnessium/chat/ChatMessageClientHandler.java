@@ -2,8 +2,8 @@ package net.jfabricationgames.onnessium.chat;
 
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
-import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.client.ClientMessageHandler;
+import net.jfabricationgames.onnessium.network.dto.chat.ChatMessageDto;
 
 public class ChatMessageClientHandler implements ClientMessageHandler<ChatMessageDto> {
 	

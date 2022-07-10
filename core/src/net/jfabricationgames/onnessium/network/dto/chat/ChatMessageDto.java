@@ -1,4 +1,4 @@
-package net.jfabricationgames.onnessium.chat.dto;
+package net.jfabricationgames.onnessium.network.dto.chat;
 
 public class ChatMessageDto {
 	

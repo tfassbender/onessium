@@ -6,8 +6,8 @@ import java.util.List;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
-import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.client.Client;
+import net.jfabricationgames.onnessium.network.dto.chat.ChatMessageDto;
 
 @ApplicationScoped
 public class ChatClientManager {

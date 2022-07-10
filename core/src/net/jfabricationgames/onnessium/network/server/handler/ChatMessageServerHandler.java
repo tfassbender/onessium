@@ -2,7 +2,7 @@ package net.jfabricationgames.onnessium.network.server.handler;
 
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
-import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
+import net.jfabricationgames.onnessium.network.dto.chat.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.server.Connection;
 import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandler;

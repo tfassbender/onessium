@@ -21,7 +21,7 @@ import com.badlogic.gdx.utils.Array;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.chat.ChatClientManager;
 import net.jfabricationgames.onnessium.chat.ChatClientManager.ChatMessageListener;
-import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
+import net.jfabricationgames.onnessium.network.dto.chat.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.dto.user.UserDto;
 import net.jfabricationgames.onnessium.user.UserListManager;
 import net.jfabricationgames.onnessium.user.UserListManager.UserListUpdateListener;
