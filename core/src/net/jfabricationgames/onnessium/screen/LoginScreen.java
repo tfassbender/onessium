@@ -1,10 +1,8 @@
 package net.jfabricationgames.onnessium.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -14,27 +12,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldFilter;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-import net.jfabricationgames.cdi.CdiContainer;
-import net.jfabricationgames.cdi.annotation.Inject;
-import net.jfabricationgames.onnessium.input.InputManager;
 import net.jfabricationgames.onnessium.user.client.LastUsedClientSettings;
 import net.jfabricationgames.onnessium.user.client.LoginHandler;
 import net.jfabricationgames.onnessium.user.client.LoginHandler.LoginException;
 
-public class LoginScreen extends ScreenAdapter {
-	
-	@Inject
-	private InputManager inputManager;
-	@Inject
-	private SkinManager skinManager;
+public class LoginScreen extends MenuScreen {
 	
 	private LastUsedClientSettings clientSettings;
 	private LoginHandler loginHandler;
-	
-	private Stage stage;
 	
 	private TextField name;
 	private TextField password;
@@ -44,11 +30,6 @@ public class LoginScreen extends ScreenAdapter {
 	private Label error;
 	
 	public LoginScreen() {
-		CdiContainer.injectTo(this);
-		
-		stage = new Stage(new ScreenViewport());
-		inputManager.addInputProcessor(stage);
-		
 		clientSettings = LastUsedClientSettings.load();
 		loginHandler = new LoginHandler();
 	}
@@ -57,7 +38,6 @@ public class LoginScreen extends ScreenAdapter {
 	public void show() {
 		Table table = new Table();
 		table.setFillParent(true);
-		table.setDebug(true);
 		stage.addActor(table);
 		
 		Skin skin = skinManager.getDefaultSkin();
@@ -159,7 +139,8 @@ public class LoginScreen extends ScreenAdapter {
 		Gdx.app.log(getClass().getSimpleName(), "logging in to server " + hostUrl + ":" + port + " with user name: " + username);
 		validateInputAndExecute(username, pwd, hostUrl, hostPort, () -> {
 			try {
-				loginHandler.login(username, pwd, hostUrl, Integer.parseInt(hostPort), () -> {}); //TODO add onComplete handler
+				loginHandler.login(username, pwd, hostUrl, Integer.parseInt(hostPort), //
+						() -> screenChanger.setScreen(new MainMenuScreen()));
 				dispose();
 			}
 			catch (LoginException e) {
@@ -177,7 +158,8 @@ public class LoginScreen extends ScreenAdapter {
 		Gdx.app.log(getClass().getSimpleName(), "signing up to server " + hostUrl + ":" + port + " with user name: " + username);
 		validateInputAndExecute(username, pwd, hostUrl, hostPort, () -> {
 			try {
-				loginHandler.signUp(username, pwd, hostUrl, Integer.parseInt(hostPort), () -> {}); //TODO add onComplete handler
+				loginHandler.signUp(username, pwd, hostUrl, Integer.parseInt(hostPort), //
+						() -> screenChanger.setScreen(new MainMenuScreen()));
 				dispose();
 			}
 			catch (LoginException e) {
@@ -200,18 +182,5 @@ public class LoginScreen extends ScreenAdapter {
 			error.setText("");
 			execute.run();
 		}
-	}
-	
-	@Override
-	public void render(float delta) {
-		ScreenUtils.clear(0f, 0f, 0f, 1f);
-		stage.act(delta);
-		stage.draw();
-	}
-	
-	@Override
-	public void dispose() {
-		inputManager.removeInputProcessor(stage);
-		stage.dispose();
 	}
 }
