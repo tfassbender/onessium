@@ -43,6 +43,17 @@ public class TestUtils {
 		field.setAccessible(accessible);
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static <T> T getFieldPerReflection(Object instance, String fieldName) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		Field field = instance.getClass().getDeclaredField(fieldName);
+		boolean accessible = field.isAccessible();
+		field.setAccessible(true);
+		Object value = field.get(instance);
+		field.setAccessible(accessible);
+		
+		return (T) value;
+	}
+	
 	public static void invokePrivateMethod(Object instance, String methodName, Object... parameters) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Method method = instance.getClass().getDeclaredMethod(methodName);
 		boolean accessible = method.isAccessible();

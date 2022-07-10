@@ -15,11 +15,13 @@ import com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive;
 import net.jfabricationgames.cdi.CdiContainer;
 import net.jfabricationgames.cdi.annotation.Inject;
 import net.jfabricationgames.onnessium.NetworkDtoRegistry;
+import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.dto.user.LogoutDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.server.Server;
 import net.jfabricationgames.onnessium.network.server.ServerMessageHandlerRegistry;
+import net.jfabricationgames.onnessium.network.server.handler.ChatMessageServerHandler;
 import net.jfabricationgames.onnessium.network.server.handler.KeepAliveServerHandler;
 import net.jfabricationgames.onnessium.network.server.handler.LoginServerHandler;
 import net.jfabricationgames.onnessium.network.server.handler.LogoutServerHandler;
@@ -68,10 +70,16 @@ public class ServerMain {
 	}
 	
 	private void registerServerHandlers() {
+		// kryo
 		handlerRegistry.addHandler(KeepAlive.class, new KeepAliveServerHandler());
+		
+		// login
 		handlerRegistry.addHandler(LoginDto.class, new LoginServerHandler());
 		handlerRegistry.addHandler(SignUpDto.class, new SignUpServerHandler());
 		handlerRegistry.addHandler(LogoutDto.class, new LogoutServerHandler());
+		
+		// chat
+		handlerRegistry.addHandler(ChatMessageDto.class, new ChatMessageServerHandler());
 	}
 	
 	private void initializeCdiContainer() throws IOException {

@@ -19,26 +19,37 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import net.jfabricationgames.cdi.annotation.Inject;
+import net.jfabricationgames.onnessium.chat.ChatClientManager;
+import net.jfabricationgames.onnessium.chat.ChatClientManager.ChatMessageListener;
+import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.dto.user.UserDto;
 import net.jfabricationgames.onnessium.user.UserListManager;
 import net.jfabricationgames.onnessium.user.UserListManager.UserListUpdateListener;
 
-public class MainMenuScreen extends MenuScreen implements UserListUpdateListener {
+public class MainMenuScreen extends MenuScreen implements UserListUpdateListener, ChatMessageListener {
 	
 	@Inject
 	private UserListManager userListManager;
+	@Inject
+	private ChatClientManager chatClientManager;
 	
 	private com.badlogic.gdx.scenes.scene2d.ui.List<String> userListOnline;
 	private TextArea textAreaMessage;
 	private Label chatLabel;
 	private ScrollPane scrollPaneChat;
 	
+	private String localUserName;
+	
 	public MainMenuScreen() {
 		// the dependency injection is done in the superclass MenuScreen
+		
+		localUserName = userListManager.localUser.username;
 		
 		userListOnline = new com.badlogic.gdx.scenes.scene2d.ui.List<>(skinManager.getDefaultSkin());
 		updateUserList(userListManager.getUsers());
 		userListManager.addUpdateListener(this);
+		
+		chatClientManager.addChatMessageListener(this);
 	}
 	
 	@Override
@@ -141,8 +152,8 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 	private void sendMessage() {
 		String message = textAreaMessage.getText().trim();
 		if (!message.isEmpty()) {
-			//TODO send message
-			appendChatText(userListManager.localUser.username, message);
+			chatClientManager.sendChatMessage(new ChatMessageDto().setUsername(localUserName).setMessage(message));
+			appendChatText(localUserName, message);
 			textAreaMessage.setText("");
 		}
 	}
@@ -164,5 +175,10 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 		Array<String> items = new Array<>();
 		users.stream().filter(dto -> dto.online).map(dto -> dto.username).forEach(items::add);
 		userListOnline.setItems(items);
+	}
+	
+	@Override
+	public void receiveChatMessage(ChatMessageDto message) {
+		appendChatText(message.username, message.message);
 	}
 }

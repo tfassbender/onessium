@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.badlogic.gdx.maps.Map;
 
+import net.jfabricationgames.onnessium.chat.dto.ChatMessageDto;
 import net.jfabricationgames.onnessium.network.dto.user.LoginDto;
 import net.jfabricationgames.onnessium.network.dto.user.SignUpDto;
 import net.jfabricationgames.onnessium.network.dto.user.UserDto;
@@ -24,6 +25,9 @@ public class NetworkDtoRegistry {
 			SignUpDto.class, //
 			UserDto.class, //
 			UserListDto.class, //
+			
+			// chat
+			ChatMessageDto.class, //
 			
 			// common
 			List.class, //

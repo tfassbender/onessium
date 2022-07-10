@@ -73,4 +73,14 @@ public class Server {
 	public void broadcast(Object message) {
 		server.sendToAllTCP(message);
 	}
+	
+	/**
+	 * Send a message object to all clients but one connection (usually the connection that sent a request).
+	 * 
+	 * NOTE: The type of the message that is sent has to be registered. See {@link Network#registerDtoClass(Class)} 
+	 * and NetworkDtoRegistry.
+	 */
+	public void sendToAllBut(Connection connection, Object message) {
+		server.sendToAllExceptTCP(connection.getID(), message);
+	}
 }

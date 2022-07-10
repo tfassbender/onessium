@@ -20,7 +20,7 @@ public class LoginHandler {
 	private static final String DEFAULT_SIGNUP_FAILED_MESSAGE_SERVER_NOT_RESPONDING = "Sign up failed - The server is not responding";
 	
 	@Inject
-	private Client networkClient;
+	private Client client;
 	@Inject
 	private UserListManager userListManager;
 	
@@ -39,7 +39,7 @@ public class LoginHandler {
 		loginException = null;
 		
 		try {
-			networkClient.connect(host, port) //
+			client.connect(host, port) //
 					.exceptionally(t -> {
 						// the connection could not be established
 						loginException = new LoginException(DEFAULT_LOGIN_FAILED_MESSAGE_CANNOT_CONNECT, t);
@@ -47,7 +47,7 @@ public class LoginHandler {
 					}) //
 					.thenAccept(v -> {
 						// the connection was successfully established, so send a login request
-						loginResponseFuture.wrapped = networkClient.send(new LoginDto().setUsername(username).setPassword(password), response -> {
+						loginResponseFuture.wrapped = client.send(new LoginDto().setUsername(username).setPassword(password), response -> {
 							if (!response.successful) {
 								loginException = new LoginException(response.errorMessage);
 							}
@@ -87,7 +87,7 @@ public class LoginHandler {
 		signUpException = null;
 		
 		try {
-			networkClient.connect(host, port) //
+			client.connect(host, port) //
 					.exceptionally(t -> {
 						// the connection could not be established
 						signUpException = new LoginException(DEFAULT_SIGNUP_FAILED_MESSAGE_CANNOT_CONNECT, t);
@@ -95,7 +95,7 @@ public class LoginHandler {
 					}) //
 					.thenAccept(v -> {
 						// the connection was successfully established, so send a sign up request
-						signupResponseFuture.wrapped = networkClient.send(new SignUpDto().setUsername(username).setPassword(password), response -> {
+						signupResponseFuture.wrapped = client.send(new SignUpDto().setUsername(username).setPassword(password), response -> {
 							if (!response.successful) {
 								signUpException = new LoginException(response.errorMessage);
 							}
