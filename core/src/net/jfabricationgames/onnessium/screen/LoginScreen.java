@@ -28,6 +28,11 @@ public class LoginScreen extends MenuScreen {
 	private TextField port;
 	
 	private Label error;
+	/**
+	 * The flag is needed to be able to change to the next screen from the thread, that executes the rendering.
+	 * When calling the setScreen method from within the runnable in the login method, it will lead to a LWJGL problem.
+	 */
+	private boolean changeToMainMenuScreen;
 	
 	public LoginScreen() {
 		clientSettings = LastUsedClientSettings.load();
@@ -130,6 +135,15 @@ public class LoginScreen extends MenuScreen {
 		});
 	}
 	
+	@Override
+	public void render(float delta) {
+		super.render(delta); // draw the stage
+		if (changeToMainMenuScreen) {
+			changeToMainMenuScreen = false;
+			screenChanger.setScreen(new MainMenuScreen());
+		}
+	}
+	
 	private void login() {
 		String username = name.getText();
 		String pwd = password.getText();
@@ -139,8 +153,7 @@ public class LoginScreen extends MenuScreen {
 		Gdx.app.log(getClass().getSimpleName(), "logging in to server " + hostUrl + ":" + port + " with user name: " + username);
 		validateInputAndExecute(username, pwd, hostUrl, hostPort, () -> {
 			try {
-				loginHandler.login(username, pwd, hostUrl, Integer.parseInt(hostPort), //
-						() -> screenChanger.setScreen(new MainMenuScreen()));
+				loginHandler.login(username, pwd, hostUrl, Integer.parseInt(hostPort), this::changeToMainMenuScreen);
 				dispose();
 			}
 			catch (LoginException e) {
@@ -158,8 +171,7 @@ public class LoginScreen extends MenuScreen {
 		Gdx.app.log(getClass().getSimpleName(), "signing up to server " + hostUrl + ":" + port + " with user name: " + username);
 		validateInputAndExecute(username, pwd, hostUrl, hostPort, () -> {
 			try {
-				loginHandler.signUp(username, pwd, hostUrl, Integer.parseInt(hostPort), //
-						() -> screenChanger.setScreen(new MainMenuScreen()));
+				loginHandler.signUp(username, pwd, hostUrl, Integer.parseInt(hostPort), this::changeToMainMenuScreen);
 				dispose();
 			}
 			catch (LoginException e) {
@@ -182,5 +194,9 @@ public class LoginScreen extends MenuScreen {
 			error.setText("");
 			execute.run();
 		}
+	}
+	
+	private void changeToMainMenuScreen() {
+		changeToMainMenuScreen = true;
 	}
 }

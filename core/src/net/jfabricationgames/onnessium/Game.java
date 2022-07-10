@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.badlogic.gdx.Gdx;
 
 import net.jfabricationgames.cdi.CdiContainer;
+import net.jfabricationgames.cdi.annotation.marker.Instance;
 import net.jfabricationgames.cdi.annotation.scope.ApplicationScoped;
 import net.jfabricationgames.cdi.exception.CdiException;
 import net.jfabricationgames.onnessium.screen.LoginScreen;
@@ -29,6 +30,7 @@ public class Game extends com.badlogic.gdx.Game implements ScreenChanger {
 		return instance;
 	}
 	
+	@Instance
 	public static Game getInstance() {
 		return instance;
 	}

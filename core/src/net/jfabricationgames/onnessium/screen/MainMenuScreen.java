@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 
 import net.jfabricationgames.cdi.annotation.Inject;
@@ -26,14 +28,15 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 	@Inject
 	private UserListManager userListManager;
 	
-	private com.badlogic.gdx.scenes.scene2d.ui.List<String> userList;
+	private com.badlogic.gdx.scenes.scene2d.ui.List<String> userListOnline;
 	private TextArea textAreaMessage;
-	private Label labelChat;
+	private Label chatLabel;
 	private ScrollPane scrollPaneChat;
 	
 	public MainMenuScreen() {
 		// the dependency injection is done in the superclass MenuScreen
 		
+		userListOnline = new com.badlogic.gdx.scenes.scene2d.ui.List<>(skinManager.getDefaultSkin());
 		updateUserList(userListManager.getUsers());
 	}
 	
@@ -41,14 +44,15 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 	public void show() {
 		Table table = new Table();
 		table.setFillParent(true);
-		table.setDebug(true);
 		stage.addActor(table);
 		
 		Skin skin = skinManager.getDefaultSkin();
 		
+		//**************************************************
+		//*** Menu Buttons
+		//**************************************************
+		
 		Table menuButtons = new Table();
-		menuButtons.setFillParent(true);
-		menuButtons.setDebug(true);
 		
 		TextButton createGame = new TextButton("Create Game", skin);
 		TextButton joinGame = new TextButton("Join Game", skin);
@@ -68,9 +72,32 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 		
 		table.add(menuButtons);
 		
-		userList = new com.badlogic.gdx.scenes.scene2d.ui.List<>(skin);
-		ScrollPane scrollPaneUsers = new ScrollPane(userList, skin);
-		table.add(scrollPaneUsers).fill();
+		//**************************************************
+		//*** User List
+		//**************************************************
+		
+		Table users = new Table();
+		
+		Label usersLabel = new Label("users - online", skin);
+		usersLabel.setFontScale(1.5f);
+		ScrollPane scrollPaneUsers = new ScrollPane(userListOnline, skin);
+		
+		users.add(usersLabel);
+		users.row();
+		users.add(scrollPaneUsers).height(300);
+		
+		table.add(users).align(Align.top).width(350).padLeft(30);
+		
+		//**************************************************
+		//*** Chat
+		//**************************************************
+		
+		Label chatLabelHeader = new Label("Global Chat", skin);
+		
+		chatLabel = new Label("", skin);
+		chatLabel.setWrap(true);
+		chatLabel.getStyle().fontColor = Color.WHITE;
+		scrollPaneChat = new ScrollPane(chatLabel, skin);
 		
 		textAreaMessage = new TextArea("", skin);
 		textAreaMessage.setPrefRows(3);
@@ -99,13 +126,15 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 		});
 		
 		Table chat = new Table();
-		chat.setFillParent(true);
-		chat.setDebug(true);
-		chat.add(textAreaMessage);
+		chat.add(chatLabelHeader).colspan(2).align(Align.bottomLeft);
+		chat.row();
+		chat.add(scrollPaneChat).colspan(2).height(100).fill();
+		chat.row();
+		chat.add(textAreaMessage).width(500);
 		chat.add(buttonSend);
 		
 		table.row();
-		table.add(chat).colspan(2);
+		table.add(chat).colspan(2).padTop(20);
 	}
 	
 	private void sendMessage() {
@@ -118,9 +147,9 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 	}
 	
 	private void appendChatText(String username, String message) {
-		String text = labelChat.getText().toString();
+		String text = chatLabel.getText().toString();
 		text += "\n" + username + ": " + message;
-		labelChat.setText(text);
+		chatLabel.setText(text);
 		
 		scrollPaneChat.scrollTo(0, 0, 0, 0);
 	}
@@ -132,7 +161,7 @@ public class MainMenuScreen extends MenuScreen implements UserListUpdateListener
 	
 	private void updateUserList(List<UserDto> users) {
 		Array<String> items = new Array<>();
-		users.stream().map(dto -> dto.username).forEach(items::add);
-		userList.setItems(items);
+		users.stream().filter(dto -> dto.online).map(dto -> dto.username).forEach(items::add);
+		userListOnline.setItems(items);
 	}
 }
